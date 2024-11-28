@@ -1,0 +1,55 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Inscription Passager{% endblock %}
+
+{% block body %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6 col-lg-5">
+            <div class="card shadow">
+                <div class="card-body">
+                    <h1 class="h4 text-center mb-4">Inscription Passager</h1>
+
+                    {# Afficher les messages flash (si présents) #}
+                    {% for message in app.session.flashbag().get('success') %}
+                        <div class="alert alert-success">{{ message }}</div>
+                    {% endfor %}
+
+                    {# Formulaire d'inscription pour le passager #}
+                    {{ form_start(form) }}
+                    <div class="mb-3">
+                        {{ form_label(form.name, 'Nom complet', {'label_attr': {'class': 'form-label'}}) }}
+                        {{ form_widget(form.name, { 'attr': { 'class': 'form-control' } }) }}
+                    </div>
+                    <div class="mb-3">
+                        {{ form_label(form.numtel, 'numero de telephone', {'label_attr': {'class': 'form-label'}}) }}
+                        {{ form_widget(form.numtel, { 'attr': { 'class': 'form-control' } }) }}
+                    </div>
+
+                        <div class="mb-3">
+                            {{ form_label(form.email, 'Adresse email', {'label_attr': {'class': 'form-label'}}) }}
+                            {{ form_widget(form.email, { 'attr': { 'class': 'form-control' } }) }}
+                        </div>
+                        <div class="mb-3">
+                            {{ form_label(form.date_naissance, 'Date de naissance', {'label_attr': {'class': 'form-label'}}) }}
+                            {{ form_widget(form.date_naissance, { 'attr': { 'class': 'form-control' } }) }}
+                        </div>
+                        
+
+                        <div class="mb-3">
+                            {{ form_label(form.password, 'Mot de passe', {'label_attr': {'class': 'form-label'}}) }}
+                            {{ form_widget(form.password, { 'attr': { 'class': 'form-control' } }) }}
+                        </div>
+
+                        <button type="submit" class="btn btn-primary w-100">S'inscrire</button>
+                    {{ form_end(form) }}
+
+                    <div class="text-center mt-3">
+                        <a href="{{ path('app_login') }}" class="text-decoration-none">Retour à la page d'accueil</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

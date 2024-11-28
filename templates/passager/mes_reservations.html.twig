@@ -1,0 +1,33 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Mes Réservations{% endblock %}
+
+{% block body %}
+<div class="container mt-4">
+    <h1>Mes Réservations</h1>
+
+    {% if reservations is empty %}
+        <div class="alert alert-warning">Vous n'avez pas encore de réservations.</div>
+    {% else %}
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Covoiturage</th>
+                    <th>État</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for reservation in reservations %}
+                    <tr>
+                        <td>
+                            De {{ reservation.covoiturage.villedeDepart }}
+                            à {{ reservation.covoiturage.villeArriver }}
+                        </td>
+                        <td>{{ reservation.etat }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% endif %}
+</div>
+{% endblock %}

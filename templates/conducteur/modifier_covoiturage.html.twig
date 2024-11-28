@@ -1,0 +1,47 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}
+    {{ form.vars.value.id ? 'Modifier un Covoiturage' : 'Ajouter un Covoiturage' }}
+{% endblock %}
+
+{% block body %}
+    <h1>{{ form.vars.value.id ? 'Modifier un Covoiturage' : 'Ajouter un Covoiturage' }}</h1>
+
+    {{ form_start(form) }}
+        <div class="form-group">
+            {{ form_label(form.date, 'Date du Covoiturage') }}
+            {{ form_widget(form.date, {'attr': {'class': 'form-control'}}) }}
+            {{ form_errors(form.date) }}
+        </div>
+
+        <div class="form-group">
+            {{ form_label(form.villedeDepart, 'Ville de Départ') }}
+            {{ form_widget(form.villedeDepart, {'attr': {'class': 'form-control'}}) }}
+            {{ form_errors(form.villedeDepart) }}
+        </div>
+
+        <div class="form-group">
+            {{ form_label(form.villeArriver, 'Ville d\'Arrivée') }}
+            {{ form_widget(form.villeArriver, {'attr': {'class': 'form-control'}}) }}
+            {{ form_errors(form.villeArriver) }}
+        </div>
+
+        <div class="form-group">
+            {{ form_label(form.placedeRencontre, 'Place de Rencontre') }}
+            {{ form_widget(form.placedeRencontre, {'attr': {'class': 'form-control'}}) }}
+            {{ form_errors(form.placedeRencontre) }}
+        </div>
+
+        <div class="form-group">
+            {{ form_label(form.vehicule, 'Véhicule') }}
+            {{ form_widget(form.vehicule, {'attr': {'class': 'form-control'}}) }}
+            {{ form_errors(form.vehicule) }}
+        </div>
+
+        <button type="submit" class="btn btn-primary">
+            {{ form.vars.value.id ? 'Enregistrer les modifications' : 'Ajouter le Covoiturage' }}
+        </button>
+    {{ form_end(form) }}
+
+    <a href="{{ path('app_mes_covoiturages') }}" class="btn btn-secondary mt-3">Retour à la liste</a>
+{% endblock %}

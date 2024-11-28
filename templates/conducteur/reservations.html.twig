@@ -1,0 +1,57 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Gérer les Réservations{% endblock %}
+
+{% block body %}
+<div class="container mt-4">
+    <h1>Gérer les Réservations</h1>
+
+    {% if reservations is empty %}
+        <div class="alert alert-warning">Aucune réservation en attente.</div>
+    {% else %}
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Passager</th>
+                    <th>Départ</th>
+                    <th>Destination</th>
+                    <th>Date</th>
+                    <th>État</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for reservation in reservations %}
+                    <tr>
+                        <td>{{ reservation.passager.name}}</td>
+                        <td>{{ reservation.covoiturage.villedeDepart }}</td>
+                        <td>{{ reservation.covoiturage.villeArriver }}</td>
+                        <td>{{ reservation.covoiturage.date|date('d/m/Y H:i') }}</td>
+                        <td>
+                            {% if reservation.etat == 'en_attente' %}
+                                <span class="badge bg-warning">En attente</span>
+                            {% elseif reservation.etat == 'valide' %}
+                                <span class="badge bg-success">Validée</span>
+                            {% else %}
+                                <span class="badge bg-danger">Refusée</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if reservation.etat == 'en_attente' %}
+                                <a href="{{ path('app_reservation_valider', { id: reservation.id }) }}" class="btn btn-success btn-sm">
+                                    Valider
+                                </a>
+                                <a href="{{ path('app_reservation_refuser', { id: reservation.id }) }}" class="btn btn-danger btn-sm">
+                                    Refuser
+                                </a>
+                            {% else %}
+                                <span class="text-muted">Aucune action</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% endif %}
+</div>
+{% endblock %}

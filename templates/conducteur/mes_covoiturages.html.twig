@@ -1,0 +1,49 @@
+{% extends 'base.html.twig' %}
+{% block title %}Mes Covoiturages{% endblock %}
+
+{% block body %}
+    <div class="container mt-4">
+        <h1 class="mb-4">Mes Covoiturages</h1>
+
+        <a href="{{ path('app_covoiturage') }}" class="btn btn-success mb-3">
+            <i class="bi bi-plus-circle"></i> Ajouter un nouveau covoiturage
+        </a>
+
+        {% if covoiturages is empty %}
+            <div class="alert alert-warning" role="alert">
+                Aucun covoiturage créer pour le moment.
+            </div>
+        {% else %}
+            <table class="table table-bordered table-striped">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Départ</th>
+                        <th>Destination</th>
+                        <th>nombre des palces</th>
+                        <th>Date</th>
+                        <th>Véhicule</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for covoiturage in covoiturages %}
+                        <tr>
+                            <td>{{ covoiturage.villedeDepart }}</td>
+                            <td>{{ covoiturage.villeArriver }}</td>
+                            <td>{{ covoiturage.nbplace}}</td>
+                            <td>{{ covoiturage.date|date('d/m/Y H:i') }}</td>
+                            <td>{{ covoiturage.vehicule.type }}</td>
+                            <td>
+                                <a href="{{ path('app_covoiturage_modifier', { id: covoiturage.id }) }}" class="btn btn-primary btn-sm">Modifier</a>
+                                <a href="{{ path('app_covoiturage_suprimer', { id: covoiturage.id }) }}" class="btn btn-primary btn-sm ">suprimer</a>
+                            </td>
+                            
+                               
+                           
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% endif %}
+    </div>
+{% endblock %}

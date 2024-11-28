@@ -1,0 +1,41 @@
+{% extends 'passager/index.html.twig' %}
+{% block title %}Covoiturages Disponibles{% endblock %}
+
+{% block body %}
+<div class="container mt-4">
+    <h1 class="mb-4">Covoiturages Disponibles</h1>
+
+    {% if covoiturages is empty %}
+        <div class="alert alert-warning">Aucun covoiturage disponible pour le moment.</div>
+    {% else %}
+        <table class="table table-bordered table-striped">
+            <thead>
+                <tr>
+                    <th>Départ</th>
+                    <th>Destination</th>
+                    <th>nombre de palces</th>
+                    <th>Date</th>
+                    <th>Conducteur</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for covoiturage in covoiturages %}
+                    <tr>
+                        <td>{{ covoiturage.villedeDepart }}</td>
+                        <td>{{ covoiturage.villeArriver }}</td>
+                        <td>{{ covoiturage.nbplace}}</td>
+                        <td>{{ covoiturage.date|date('d/m/Y H:i') }}</td>
+                        <td>{{ covoiturage.conducteur.name}}</td>
+                        <td>
+                            <a href="{{ path('app_reservation', { id: covoiturage.id }) }}" class="btn btn-primary btn-sm">
+                                Réserver
+                            </a>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% endif %}
+</div>
+{% endblock %}

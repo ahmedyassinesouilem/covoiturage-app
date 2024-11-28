@@ -1,0 +1,50 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Ajout Covoiturage{% endblock %}
+
+{% block body %}
+<div class="container mt-5">
+    <h1 class="text-center mb-4">Ajouter un Covoiturage</h1>
+
+    {# Formulaire d'ajout de covoiturage avec Bootstrap #}
+    <div class="card shadow-sm">
+        <div class="card-body">
+            {{ form_start(form) }}
+
+                <div class="mb-3">
+                    {{ form_label(form.villedeDepart, 'Ville de départ', {'label_attr': {'class': 'form-label'}}) }}
+                    {{ form_widget(form.villedeDepart, { 'attr': { 'class': 'form-control' } }) }}
+                </div>
+
+                <div class="mb-3">
+                    {{ form_label(form.villeArriver, 'Ville d\'arrivée', {'label_attr': {'class': 'form-label'}}) }}
+                    {{ form_widget(form.villeArriver, { 'attr': { 'class': 'form-control' } }) }}
+                </div>
+
+                <div class="mb-3">
+                    {{ form_label(form.placedeRencontre, 'Lieu de rencontre', {'label_attr': {'class': 'form-label'}}) }}
+                    {{ form_widget(form.placedeRencontre, { 'attr': { 'class': 'form-control' } }) }}
+                </div>
+
+                <div class="mb-3">
+                    {{ form_label(form.vehicule, 'Véhicule', {'label_attr': {'class': 'form-label'}}) }}
+                    {{ form_widget(form.vehicule, { 'attr': { 'class': 'form-control' } }) }}
+                </div>
+
+                <div class="mb-3">
+                    {{ form_label(form.date, 'Date du covoiturage', {'label_attr': {'class': 'form-label'}}) }}
+                    {{ form_widget(form.date, { 'attr': { 'class': 'form-control' } }) }}
+                </div>
+                <div class="mb-3">
+                    {{ form_label(form.nbplace, 'nombre des palaces', {'label_attr': {'class': 'form-label'}}) }}
+                    {{ form_widget(form.nbplace, { 'attr': { 'class': 'form-control' } }) }}
+                </div>
+                
+
+                <button type="submit" class="btn btn-primary w-100">Ajouter Covoiturage</button>
+
+            {{ form_end(form) }}
+        </div>
+    </div>
+</div>
+{% endblock %}
