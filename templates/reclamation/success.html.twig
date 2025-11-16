@@ -1,0 +1,11 @@
+{# templates/reclamation/success.html.twig #}
+
+{% extends 'base.html.twig' %}
+
+{% block title %}Réclamation soumise avec succès{% endblock %}
+
+{% block body %}
+    <h1>Votre réclamation a été soumise avec succès !</h1>
+    <p>Merci pour votre retour. Nous traiterons votre réclamation dans les plus brefs délais.</p>
+    <a href="{{ path('reclamation_new') }}">Soumettre une autre réclamation</a>
+{% endblock %}

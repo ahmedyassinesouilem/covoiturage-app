@@ -1,0 +1,98 @@
+{% extends 'base.html.twig' %}
+{% block title %}Inscription Conducteur{% endblock %}
+
+{% block body %}
+<style>
+    body {
+        background-image: url("{{ asset ('images/bg.jpg') }}");
+        background-size: cover;
+        background-repeat: no-repeat;
+        background-attachment: fixed;
+        background-position: center;
+    }
+
+    .btn-custom {
+        background-color: #28A745;
+        color: #FFFFFF;
+        border: none;
+    }
+
+    .btn-custom:hover {
+        background-color: #218838;
+    }
+
+    .card {
+        border: 1px solid #28A745;
+        background-color: rgba(255, 255, 255, 0.9);
+    }
+
+    .text-custom {
+        color: #28A745;
+    }
+
+    .login-container {
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column; /* Aligne le contenu verticalement */
+        align-items: center;
+        justify-content: center;
+        gap: 20px; /* Espace entre les éléments (logo et carte) */
+    }
+
+    .logo-container img {
+        max-width: 150px;
+        height: auto;
+    }
+
+    .login-card {
+        width: 100%;
+        max-width: 600px; /* Augmente la largeur maximale */
+        padding: 20px; /* Ajoute du padding */
+    }
+</style>
+
+<div class="container login-container">
+    <div class="login-card">
+        <div class="card shadow">
+            <div class="card-body">
+                <h1 class="h3 mb-3 text-center font-weight-normal text-custom">Please sign in</h1>
+                <form method="post">
+                    {% if error %}
+                        <div class="alert alert-danger">{{ error.messageKey|trans(error.messageData, 'security') }}</div>
+                    {% endif %}
+
+                    {% for message in app.flashes('error') %}
+                        <div class="alert alert-danger">{{ message }}</div>
+                    {% endfor %}
+
+                    <div class="mb-3">
+                        <label for="inputEmail" class="form-label">Email</label>
+                        <input type="email" value="{{ last_username }}" name="email" id="inputEmail" class="form-control" autocomplete="email" required autofocus>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="inputPassword" class="form-label">Password</label>
+                        <input type="password" name="password" id="inputPassword" class="form-control" autocomplete="current-password" required>
+                    </div>
+
+                    <input type="hidden" name="_csrf_token"
+                           value="{{ csrf_token('authenticate') }}"
+                    >
+
+                    <div class="form-check mb-3">
+                        <input type="checkbox" class="form-check-input" name="_remember_me" id="rememberMe">
+                        <label class="form-check-label" for="rememberMe">Remember me</label>
+                    </div>
+
+                    <div class="d-flex justify-content-between mb-3">
+                        <a href="{{ path('register_conducteur') }}" class="text-decoration-none text-custom">Register as driver</a>
+                        <a href="{{ path('register_passager') }}" class="text-decoration-none text-custom">Register as passenger</a>
+                    </div>
+
+                    <button class="btn btn-custom w-100" type="submit">Sign in</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

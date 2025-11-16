@@ -1,0 +1,133 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Accueil - Covoiturage {% endblock %}
+{% block styles %}
+    <link rel="stylesheet" href="{{ asset('css/home.css') }}">
+{% endblock %}
+
+{% block content %}
+<!-- Hero Section with Search Form -->
+<div id="carouselExampleIndicators" class="carousel slide my-5" data-bs-ride="carousel">
+    <!-- Indicators -->
+    <div class="carousel-indicators">
+        <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
+        <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="1" aria-label="Slide 2"></button>
+        <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="2" aria-label="Slide 3"></button>
+    </div>
+
+    <!-- Slides -->
+    <div class="carousel-inner">
+        <div class="carousel-item active">
+            <img src="{{ asset('images/hero.jpg') }}" class="d-block w-100" alt="First Slide">
+        </div>
+        <div class="carousel-item">
+            <img src="{{ asset('images/hero1.jpg') }}" class="d-block w-100" alt="Second Slide">
+        </div>
+        <div class="carousel-item">
+            <img src="{{ asset('images/hero3.jpg') }}" class="d-block w-100" alt="Third Slide">
+        </div>
+    </div>
+
+    <!-- Controls -->
+    <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="prev">
+        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">Previous</span>
+    </button>
+    <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="next">
+        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">Next</span>
+    </button>
+</div>
+
+<!-- Carousel Section -->
+
+
+<!-- Featured Rides Section -->
+<div class="container my-5">
+    <h2 class="section-title">Trajets populaires</h2>
+    <p class="section-subtitle">Découvrez les trajets les plus demandés par nos utilisateurs</p>
+    <div class="row">
+        <div class="col-md-4">
+            <div class="card">
+                <img src="{{ asset('images/ride1.jpg') }}" class="card-img-top" alt="Trajet 1">
+                <div class="card-body">
+                    <h5 class="card-title">Sousse → Tunis</h5>
+                    
+                    <a href="#" class="btn btn-primary">Réserver</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card">
+                <img src="{{ asset('images/ride2.jpg') }}" class="card-img-top" alt="Trajet 2">
+                <div class="card-body">
+                    <h5 class="card-title">Monastir → Sfax</h5>
+                    
+                    <a href="#" class="btn btn-primary">Réserver</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card">
+                <img src="{{ asset('images/ride3.jpg') }}" class="card-img-top" alt="Trajet 3">
+                <div class="card-body">
+                    <h5 class="card-title">Tunis → Hammamet</h5>
+                   
+                    <a href="#" class="btn btn-primary">Réserver</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Advantages Section -->
+<!-- Advantages Section -->
+<div class="container my-5 text-center">
+    <h2 class="section-title">Pourquoi choisir notre plateforme ?</h2>
+    <div class="row">
+        <div class="col-md-4">
+            <div class="feature-box">
+                <img src="{{ asset('images/economy.jpg') }}" alt="Économisez de l'argent" class="img-fluid">
+                <h3>Économisez de l'argent</h3>
+                <p>Partagez les frais de carburant et réduisez vos coûts de transport.</p>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="feature-box">
+                <img src="{{ asset('images/community.jpg') }}" alt="Rejoignez une communauté" class="img-fluid">
+                <h3>Rejoignez une communauté</h3>
+                <p>Faites de nouvelles rencontres et voyagez en toute convivialité.</p>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="feature-box">
+                <img src="{{ asset('images/environment.jpg') }}" alt="Réduisez votre empreinte carbone" class="img-fluid">
+                <h3>Réduisez votre empreinte carbone</h3>
+                <p>Un geste simple pour protéger l'environnement en partageant votre voiture.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<!-- Testimonials -->
+<!-- Testimonials -->
+<div class="container my-5">
+    <h2 class="section-title text-center">Témoignages</h2>
+    <div class="row">
+        <div class="col-md-6">
+            <blockquote class="blockquote">
+                <p class="mb-0">"Grâce à cette plateforme, je partage mes trajets tous les jours. C'est économique et écologique !"</p>
+                <footer class="blockquote-footer">Amina, Sousse</footer>
+            </blockquote>
+        </div>
+        <div class="col-md-6">
+            <blockquote class="blockquote">
+                <p class="mb-0">"Super expérience, j'ai rencontré des gens formidables lors de mes trajets."</p>
+                <footer class="blockquote-footer">Karim, Tunis</footer>
+            </blockquote>
+        </div>
+    </div>
+</div>
+{% endblock %}

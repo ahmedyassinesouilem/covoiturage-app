@@ -1,0 +1,148 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}
+    {{ form.vars.value.id ? 'Modifier un Covoiturage' : 'Ajouter un Covoiturage' }}
+{% endblock %}
+
+{% block body %}
+<style>
+    /* Styles généraux */
+    body {
+        background: linear-gradient(135deg, #f5f7fa, #c3cfe2); /* Dégradé professionnel */
+        font-family: 'Roboto', sans-serif; /* Police moderne */
+        margin: 0;
+        padding: 0;
+        color: #2c3e50;
+    }
+
+    /* Conteneur principal */
+    .container {
+        max-width: 1000px;
+        margin: 50px auto;
+        padding: 30px;
+        background: #ffffff;
+        border-radius: 8px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    /* En-tête de la page */
+    h1 {
+        font-size: 2.2rem;
+        color: #34495e;
+        margin-bottom: 20px;
+        border-bottom: 2px solid #3498db;
+        padding-bottom: 10px;
+    }
+
+    /* Formulaire */
+    .form-group {
+        margin-bottom: 20px;
+    }
+
+    .form-control {
+        width: 100%;
+        padding: 10px;
+        font-size: 1rem;
+        border-radius: 5px;
+        border: 1px solid #ecf0f1;
+        box-sizing: border-box;
+    }
+
+    .form-control:focus {
+        border-color: #3498db;
+        outline: none;
+    }
+
+    .form-control::placeholder {
+        color: #95a5a6;
+    }
+
+    /* Bouton de soumission */
+    .btn-primary {
+        background-color: #3498db;
+        color: white;
+        font-size: 1rem;
+        padding: 12px 20px;
+        border-radius: 5px;
+        border: none;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .btn-primary:hover {
+        background-color: #2980b9;
+    }
+
+    .btn-secondary {
+        background-color: #95a5a6;
+        color: white;
+        font-size: 1rem;
+        padding: 10px 15px;
+        border-radius: 5px;
+        border: none;
+        text-decoration: none;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .btn-secondary:hover {
+        background-color: #7f8c8d;
+    }
+
+    /* Animation subtile */
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(10px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .container {
+        animation: fadeIn 0.8s ease;
+    }
+</style>
+
+<div class="container mt-4">
+    <h1>{{ form.vars.value.id ? 'Modifier un Covoiturage' : 'Ajouter un Covoiturage' }}</h1>
+
+    {{ form_start(form) }}
+        <div class="form-group">
+            {{ form_label(form.date, 'Date du Covoiturage') }}
+            {{ form_widget(form.date, {'attr': {'class': 'form-control'}}) }}
+            {{ form_errors(form.date) }}
+        </div>
+
+        <div class="form-group">
+            {{ form_label(form.villedeDepart, 'Ville de Départ') }}
+            {{ form_widget(form.villedeDepart, {'attr': {'class': 'form-control'}}) }}
+            {{ form_errors(form.villedeDepart) }}
+        </div>
+
+        <div class="form-group">
+            {{ form_label(form.villeArriver, 'Ville d\'Arrivée') }}
+            {{ form_widget(form.villeArriver, {'attr': {'class': 'form-control'}}) }}
+            {{ form_errors(form.villeArriver) }}
+        </div>
+
+        <div class="form-group">
+            {{ form_label(form.placedeRencontre, 'Place de Rencontre') }}
+            {{ form_widget(form.placedeRencontre, {'attr': {'class': 'form-control'}}) }}
+            {{ form_errors(form.placedeRencontre) }}
+        </div>
+
+        <div class="form-group">
+            {{ form_label(form.vehicule, 'Véhicule') }}
+            {{ form_widget(form.vehicule, {'attr': {'class': 'form-control'}}) }}
+            {{ form_errors(form.vehicule) }}
+        </div>
+
+        <button type="submit" class="btn btn-primary">
+            {{ form.vars.value.id ? 'Enregistrer les modifications' : 'Ajouter le Covoiturage' }}
+        </button>
+    {{ form_end(form) }}
+
+    <a href="{{ path('app_mes_covoiturages') }}" class="btn btn-secondary mt-3">Retour à la liste</a>
+</div>
+{% endblock %}

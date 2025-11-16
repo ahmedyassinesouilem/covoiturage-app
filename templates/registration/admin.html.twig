@@ -1,0 +1,77 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Inscription Administrateur{% endblock %}
+
+{% block body %}
+<style>
+    body {
+        background-image: url("{{ asset('imagelogin.jpg') }}");
+        background-size: cover;
+        background-repeat: no-repeat;
+        background-attachment: fixed;
+        background-position: center;
+    }
+
+    .card {
+        border: 1px solid #28A745;
+        background-color: rgba(255, 255, 255, 0.9);
+    }
+
+    .btn-primary {
+        background-color: #28A745;
+        border-color: #28A745;
+    }
+
+    .btn-primary:hover {
+        background-color: #218838;
+        border-color: #1e7e34;
+    }
+</style>
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6 col-lg-5">
+            <div class="card shadow">
+                <div class="card-body">
+                    
+                    <h1 class="h4 text-center mb-4">Inscription Administrateur</h1>
+
+                    {# Afficher les messages flash (si présents) #}
+                    {% for message in app.session.flashbag().get('success') %}
+                        <div class="alert alert-success">{{ message }}</div>
+                    {% endfor %}
+
+                    {# Formulaire d'inscription pour l'administrateur #}
+                    {{ form_start(form) }}
+                    <div class="mb-3">
+                        {{ form_label(form.name, 'Nom complet', {'label_attr': {'class': 'form-label'}}) }}
+                        {{ form_widget(form.name, { 'attr': { 'class': 'form-control' } }) }}
+                    </div>
+
+                    <div class="mb-3">
+                        {{ form_label(form.email, 'Adresse email', {'label_attr': {'class': 'form-label'}}) }}
+                        {{ form_widget(form.email, { 'attr': { 'class': 'form-control' } }) }}
+                    </div>
+
+                    <div class="mb-3">
+                        {{ form_label(form.date_naissance, 'Date de naissance', {'label_attr': {'class': 'form-label'}}) }}
+                        {{ form_widget(form.date_naissance, { 'attr': { 'class': 'form-control' } }) }}
+                    </div>
+
+                    <div class="mb-3">
+                        {{ form_label(form.password, 'Mot de passe', {'label_attr': {'class': 'form-label'}}) }}
+                        {{ form_widget(form.password, { 'attr': { 'class': 'form-control' } }) }}
+                    </div>
+
+                    <button type="submit" class="btn btn-primary w-100">S'inscrire</button>
+                    {{ form_end(form) }}
+
+                    <div class="text-center mt-3">
+                        <a href="{{ path('app_login') }}" class="text-decoration-none">Retour à la page d'accueil</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

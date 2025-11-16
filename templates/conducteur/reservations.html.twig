@@ -1,0 +1,198 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Gérer les Réservations{% endblock %}
+
+{% block body %}
+<style>
+    /* Styles généraux */
+    body {
+        background: linear-gradient(135deg, #f5f7fa, #c3cfe2); /* Dégradé professionnel */
+        font-family: 'Roboto', sans-serif; /* Police moderne */
+        margin: 0;
+        padding: 0;
+        color: #2c3e50;
+    }
+
+    /* Conteneur principal */
+    .container {
+        max-width: 1000px;
+        margin: 50px auto;
+        padding: 30px;
+        background: #ffffff;
+        border-radius: 8px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    /* En-tête de la page */
+    h1 {
+        font-size: 2.2rem;
+        color: #34495e;
+        margin-bottom: 20px;
+        border-bottom: 2px solid #3498db;
+        padding-bottom: 10px;
+    }
+
+    /* Table */
+    table {
+        width: 100%;
+        margin-top: 20px;
+        border-collapse: collapse;
+    }
+
+    th, td {
+        padding: 12px;
+        text-align: left;
+        border: 1px solid #ecf0f1;
+    }
+
+    th {
+        background-color: #34495e;
+        color: white;
+    }
+
+    tr:nth-child(even) {
+        background-color: #ecf0f1;
+    }
+
+    tr:hover {
+        background-color: #bdc3c7;
+    }
+
+    /* Badges */
+    .badge {
+        padding: 6px 12px;
+        font-size: 0.9rem;
+        border-radius: 12px;
+    }
+
+    .badge.bg-warning {
+        background-color: #f39c12;
+        color: white;
+    }
+
+    .badge.bg-success {
+        background-color: #27ae60;
+        color: white;
+    }
+
+    .badge.bg-danger {
+        background-color: #e74c3c;
+        color: white;
+    }
+
+    /* Boutons */
+    .btn-success {
+        background-color: #27ae60;
+        color: white;
+        font-size: 1rem;
+        padding: 10px 20px;
+        border-radius: 5px;
+    }
+
+    .btn-danger {
+        background-color: #e74c3c;
+        color: white;
+        font-size: 1rem;
+        padding: 10px 20px;
+        border-radius: 5px;
+    }
+
+    .btn-success:hover {
+        background-color: #2ecc71;
+    }
+
+    .btn-danger:hover {
+        background-color: #c0392b;
+    }
+    .table thead {
+    position: sticky;
+    top: 0;
+    z-index: 1; /* S'assurer que l'en-tête est toujours au-dessus du contenu */
+    background-color: #34495e; /* Assurez-vous que l'arrière-plan de l'en-tête est visible */
+    color: white;
+    }
+
+    /* Ajoutez une ombre portée pour que l'en-tête se distingue lorsqu'il est fixé */
+    .table thead th {
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Alert */
+    .alert-warning {
+        background-color: #f39c12;
+        color: white;
+        padding: 15px;
+        font-size: 1rem;
+        border-radius: 5px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Animation subtile */
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(10px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .container {
+        animation: fadeIn 0.8s ease;
+    }
+</style>
+
+<div class="container mt-4">
+    <h1>Gérer les Réservations</h1>
+
+    {% if reservations is empty %}
+        <div class="alert alert-warning">Aucune réservation en attente.</div>
+    {% else %}
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Passager</th>
+                    <th>Départ</th>
+                    <th>Destination</th>
+                    <th>Date</th>
+                    <th>État</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for reservation in reservations %}
+                    <tr>
+                        <td>{{ reservation.passager.name }}</td>
+                        <td>{{ reservation.covoiturage.villedeDepart }}</td>
+                        <td>{{ reservation.covoiturage.villeArriver }}</td>
+                        <td>{{ reservation.covoiturage.date|date('d/m/Y H:i') }}</td>
+                        <td>
+                            {% if reservation.etat == 'en_attente' %}
+                                <span class="badge bg-warning">En attente</span>
+                            {% elseif reservation.etat == 'valide' %}
+                                <span class="badge bg-success">Validée</span>
+                            {% else %}
+                                <span class="badge bg-danger">Refusée</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if reservation.etat == 'en_attente' %}
+                                <a href="{{ path('app_reservation_valider', { id: reservation.id }) }}" class="btn btn-success btn-sm">
+                                    Valider
+                                </a>
+                                <a href="{{ path('app_reservation_refuser', { id: reservation.id }) }}" class="btn btn-danger btn-sm">
+                                    Refuser
+                                </a>
+                            {% else %}
+                                <span class="text-muted">Aucune action</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% endif %}
+</div>
+{% endblock %}

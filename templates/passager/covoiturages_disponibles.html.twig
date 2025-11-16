@@ -1,0 +1,111 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Rechercher Covoiturage{% endblock %}
+
+{% block body %}
+<div class="background-image">
+    <div class="container mt-5">
+        <h1 class="text-center">Rechercher un Covoiturage</h1>
+        
+        <!-- Formulaire de recherche -->
+        <form method="get" action="{{ path('app_rechercher_covoiturage') }}" class="mb-4">
+            <div class="form-row">
+                <div class="col-md-4 mb-3">
+                    <label for="villeDepart">Ville de départ</label>
+                    <input type="text" class="form-control" id="villeDepart" name="villeDepart" placeholder="Ville de départ" value="{{ app.request.query.get('villeDepart') }}">
+                </div>
+                <div class="col-md-4 mb-3">
+                    <label for="villeArriver">Ville d'arrivée</label>
+                    <input type="text" class="form-control" id="villeArriver" name="villeArriver" placeholder="Ville d'arrivée" value="{{ app.request.query.get('villeArriver') }}">
+                </div>
+                <div class="col-md-3 mb-3">
+                    <label for="date">Date et heure</label>
+                    <input type="datetime-local" class="form-control" id="date" name="date" value="{{ app.request.query.get('date') }}">
+                </div>
+                <div class="col-md-1 mb-3">
+                    <button type="submit" class="btn btn-primary mt-4">Rechercher</button>
+                </div>
+            </div>
+        </form>
+
+        <!-- Résultats de recherche -->
+        {% if covoiturages is not empty %}
+            <div class="list-group mt-4">
+                {% for covoiturage in covoiturages %}
+                    <div class="list-group-item">
+                        <h5 class="mb-2">
+                            <i class="fas fa-map-marker-alt text-primary"></i>
+                            {{ covoiturage.villedeDepart }} → {{ covoiturage.villeArriver }}
+                        </h5>
+                        <p>
+                            <strong>Date :</strong> {{ covoiturage.date|date('d-m-Y H:i') }}<br>
+                            <strong>Lieu de rencontre :</strong> {{ covoiturage.placedeRencontre }}<br>
+                            <strong>Places disponibles :</strong> {{ covoiturage.nbplace }}
+                        </p>
+                        <a href="{{ path('app_reservation', {'id': covoiturage.id}) }}" class="btn btn-primary">Réserver</a>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p class="mt-4 text-center text-white">Aucun covoiturage disponible pour votre recherche.</p>
+        {% endif %}
+    </div>
+</div>
+
+<style>
+    .background-image {
+        position: relative;
+        padding: 50px 0;
+    }
+
+    .background-image::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: url('/images/map.jpg') no-repeat center center fixed;
+        background-size: cover;
+        opacity: 0.3;
+        filter: blur(5px);
+        z-index: 1;
+    }
+
+    .container {
+        position: relative;
+        z-index: 2;
+        max-width: 800px;
+        margin: 0 auto;
+        background: rgba(255, 255, 255, 0.85);
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    }
+
+    h1 {
+        font-size: 2.5rem;
+        margin-bottom: 20px;
+        color: #2980b9;
+    }
+
+    .list-group-item {
+        background-color: white;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        margin-bottom: 15px;
+        padding: 20px;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .btn-primary {
+        background-color: #3498db;
+        color: white;
+        border: none;
+    }
+
+    .btn-primary:hover {
+        background-color: #2980b9;
+    }
+</style>
+{% endblock %}

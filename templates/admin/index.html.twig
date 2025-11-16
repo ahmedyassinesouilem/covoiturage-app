@@ -1,0 +1,43 @@
+{# templates/admin/dashboard.html.twig #}
+{% extends 'base.html.twig' %}
+
+{% block title %}Admin Dashboard{% endblock %}
+
+{% block body %}
+    <h1>Admin Dashboard</h1>
+
+    {% for message in app.flashes('success') %}
+        <div class="alert alert-success">{{ message }}</div>
+    {% endfor %}
+
+    <h2>Unvalidated Users</h2>
+
+    {% if unvalideconducteur is empty %}
+        <p>No pending registrations.</p>
+    {% else %}
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Email</th>
+                    <th>Last Name</th>
+                    <th>User Type</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for cond in unvalideconducteur %}
+                    <tr>
+                        <td>{{ cond.id }}</td>
+                        <td>{{ cond.email }}</td>
+                        <td>{{ cond.name}}</td>
+                        <td>{{ cond.numPermis }}</td>
+                        <td>
+                            <a href="{{ path('admin_validate_user', { id: cond.id }) }}" class="btn btn-success">Validate</a>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% endif %}
+{% endblock %}

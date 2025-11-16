@@ -1,0 +1,53 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Gestion des Réservations{% endblock %}
+
+{% block body %}
+<div class="container mt-5">
+    <h1 class="text-center">Toutes les Réservations</h1>
+    <form method="get" action="{{ path('app_admin_reservations') }}" class="mb-4">
+        <div class="row">
+            <div class="col-md-4">
+                <label for="passenger" class="form-label">Nom du passager</label>
+                <input type="text" id="passenger" name="passenger" class="form-control" placeholder="Nom du passager">
+            </div>
+            <div class="col-md-4">
+                <label for="driver" class="form-label">Nom du conducteur</label>
+                <input type="text" id="driver" name="driver" class="form-control" placeholder="Nom du conducteur">
+            </div>
+            <div class="col-md-4 d-flex align-items-end">
+                <button type="submit" class="btn btn-primary">Rechercher</button>
+            </div>
+        </div>
+    </form>
+
+    {% if reservations is not empty %}
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Passager</th>
+                    <th>Covoiturage</th>
+                    <th>État</th>
+                    <th>conducteur</th>
+                    <th>Date</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for reservation in reservations %}
+                    <tr>
+                        <td>{{ reservation.id }}</td>
+                        <td>{{ reservation.passager.name}}</td>
+                        <td>{{ reservation.covoiturage.villedeDepart }} → {{ reservation.covoiturage.villeArriver }}</td>
+                        <td>{{ reservation.etat }}</td>
+                        <td>{{ reservation.covoiturage.conducteur.name }}</td>
+                        <td>{{ reservation.covoiturage.date|date('d-m-Y H:i') }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p class="text-center">Aucune réservation n'a été effectuée.</p>
+    {% endif %}
+</div>
+{% endblock %}

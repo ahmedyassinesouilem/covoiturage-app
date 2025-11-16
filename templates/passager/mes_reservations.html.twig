@@ -1,0 +1,113 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Mes Réservations{% endblock %}
+
+{% block body %}
+<div class="container mt-5">
+    <h1 class="text-center">Mes Réservations</h1>
+
+    {% if reservations is not empty %}
+        <div class="list-group mt-4">
+            {% for reservation in reservations %}
+                <div class="list-group-item reservation-item">
+                    <h5 class="mb-1">{{ reservation.covoiturage.villedeDepart }} → {{ reservation.covoiturage.villeArriver }}</h5>
+                    <p class="mb-1">
+                        <strong>Date :</strong> {{ reservation.covoiturage.date|date('d-m-Y H:i') }}<br>
+                        <strong>Statut :</strong> 
+                        <span class="badge {{ reservation.etat == 'Confirmée' ? 'badge-success' : 'badge-warning' }}">
+                            {{ reservation.etat }}
+                        </span><br>
+                        <strong>Lieu de rencontre :</strong> {{ reservation.covoiturage.placedeRencontre }}
+                    </p>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p class="mt-4 text-center">Vous n'avez pas encore de réservations.</p>
+    {% endif %}
+</div>
+
+<style>
+    /* Styles généraux */
+    body {
+        background: linear-gradient(135deg, #f5f7fa, #c3cfe2); /* Dégradé professionnel */
+        font-family: 'Roboto', sans-serif; /* Police moderne */
+        margin: 0;
+        padding: 0;
+        color: #2c3e50;
+    }
+
+    /* Conteneur principal */
+    .container {
+        max-width: 800px;
+        margin: 50px auto;
+        padding: 30px;
+        background: #ffffff;
+        border-radius: 8px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    /* En-tête de la page */
+    h1 {
+        font-size: 2.2rem;
+        color: #34495e;
+        margin-bottom: 20px;
+        border-bottom: 2px solid #3498db;
+        padding-bottom: 10px;
+    }
+
+    /* Liste des réservations */
+    .list-group-item {
+        background-color: #ffffff;
+        border: 1px solid #ecf0f1;
+        border-radius: 8px;
+        margin-bottom: 15px;
+        padding: 20px;
+        box-shadow: 0 1px 5px rgba(0, 0, 0, 0.1);
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .list-group-item:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    }
+
+    /* Badges pour le statut */
+    .badge-success {
+        background-color: #27ae60;
+        color: white;
+        padding: 6px 12px;
+        font-size: 0.9rem;
+        border-radius: 12px;
+    }
+
+    .badge-warning {
+        background-color: #f39c12;
+        color: white;
+        padding: 6px 12px;
+        font-size: 0.9rem;
+        border-radius: 12px;
+    }
+
+    /* Texte centré */
+    .text-center {
+        text-align: center;
+    }
+
+    /* Animation subtile */
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(10px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .list-group-item {
+        animation: fadeIn 0.8s ease;
+    }
+</style>
+{% endblock %}

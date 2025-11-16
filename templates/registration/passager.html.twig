@@ -1,0 +1,82 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Inscription Passager{% endblock %}
+
+{% block body %}
+<style>
+    body {
+        background-image: url("{{ asset ('images/bg.jpg') }}");
+        background-size: cover; /* L'image couvre toute la page */
+        background-repeat: no-repeat; /* Pas de répétition de l'image */
+        background-attachment: fixed; /* L'image reste fixe lors du défilement */
+        background-position: center; /* L'image est centrée */
+    }
+
+    .card {
+        border: 1px solid #28A745;
+        background-color: rgba(255, 255, 255, 0.9); /* Fond blanc semi-transparent */
+    }
+
+    .btn-primary {
+        background-color: #28A745;
+        border-color: #28A745;
+    }
+
+    .btn-primary:hover {
+        background-color: #218838;
+        border-color: #1e7e34;
+    }
+    
+    
+</style>
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6 col-lg-5">
+            <div class="card shadow">
+                <div class="card-body">
+                    
+                    <h1 class="h4 text-center mb-4">Inscription Passager</h1>
+
+                    {# Afficher les messages flash (si présents) #}
+                    {% for message in app.session.flashbag().get('success') %}
+                        <div class="alert alert-success">{{ message }}</div>
+                    {% endfor %}
+
+                    {# Formulaire d'inscription pour le passager #}
+                    {{ form_start(form) }}
+                    <div class="mb-3">
+                        {{ form_label(form.name, 'Nom complet', {'label_attr': {'class': 'form-label'}}) }}
+                        {{ form_widget(form.name, { 'attr': { 'class': 'form-control' } }) }}
+                    </div>
+                    <div class="mb-3">
+                        {{ form_label(form.numtel, 'Numéro de téléphone', {'label_attr': {'class': 'form-label'}}) }}
+                        {{ form_widget(form.numtel, { 'attr': { 'class': 'form-control' } }) }}
+                    </div>
+
+                    <div class="mb-3">
+                        {{ form_label(form.email, 'Adresse email', {'label_attr': {'class': 'form-label'}}) }}
+                        {{ form_widget(form.email, { 'attr': { 'class': 'form-control' } }) }}
+                    </div>
+                    <div class="mb-3">
+                        {{ form_label(form.date_naissance, 'Date de naissance', {'label_attr': {'class': 'form-label'}}) }}
+                        {{ form_widget(form.date_naissance, { 'attr': { 'class': 'form-control' } }) }}
+                    </div>
+
+                    <div class="mb-3">
+                        {{ form_label(form.password, 'Mot de passe', {'label_attr': {'class': 'form-label'}}) }}
+                        {{ form_widget(form.password, { 'attr': { 'class': 'form-control' } }) }}
+                    </div>
+
+                    <button type="submit" class="btn btn-primary w-100">S'inscrire</button>
+                    {{ form_end(form) }}
+
+                    <div class="text-center mt-3">
+                        <a href="{{ path('app_login') }}" class="text-decoration-none">Retour à la page d'accueil</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

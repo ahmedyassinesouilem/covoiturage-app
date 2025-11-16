@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Tri9na{% endblock %}</title>
+    <link rel="stylesheet" href="{{ asset('css/app.css') }}"> <!-- Chemin vers ton fichier CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    {% block styles %}{% endblock %}
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">
+                <img src="{{ asset('images/logo.png') }}" alt="Logo" width="200">
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"><a class="nav-link" href="{{ path('app_main') }}">Accueil</a></li>
+
+                    {% if app.user %}
+                        <!-- Liens pour les utilisateurs connectés -->
+                        {% if 'ROLE_PASSAGER' in app.user.roles %}
+                            <li class="nav-item"><a class="nav-link" href="{{ path('app_passager') }}">Espace Passager</a></li>
+                            <li class="nav-item"><a class="nav-link" href="{{ path('app_mes_reservations') }}">Mes réservations</a></li>
+                            <li class="nav-item"><a class="nav-link" href="{{ path('reclamation_new') }}">reclamation</a></li>
+                        {% endif %}
+
+                        {% if 'ROLE_CONDUCTEUR' in app.user.roles %}
+                            <li class="nav-item"><a class="nav-link" href="{{ path('app_vehicule') }}">Ajouter véhicule</a></li>
+                            <li class="nav-item"><a class="nav-link" href="{{ path('app_covoiturage') }}">Ajouter covoiturage</a></li>
+                            <li class="nav-item"><a class="nav-link" href="{{ path('app_mes_covoiturages') }}">Mes covoiturages</a></li>
+                            <li class="nav-item"><a class="nav-link" href="{{ path('app_conducteur_reservations') }}">Les réservations</a></li>
+                            <li class="nav-item"><a class="nav-link" href="{{ path('reclamation_new') }}">reclamation</a></li>
+                        {% endif %}
+                        {% if 'ROLE_ADMIN' in app.user.roles %}
+                            <li class="nav-item"><a class="nav-link" href="{{ path('app_admin') }}">valider conducteur</a></li>
+                            <li class="nav-item"><a class="nav-link" href="{{ path('app_admin_reservations') }}">consulter les reservations</a></li>
+                            <li class="nav-item"><a class="nav-link" href="{{ path('app_users') }}">les utilisateurs</a></li>
+                            <li class="nav-item"><a class="nav-link" href="{{ path('app_admin_reclamations') }}">les reclamtions</a></li>
+                        {% endif %}
+
+                        <!-- Liens communs aux conducteurs et passagers -->
+                        <li class="nav-item"><a class="nav-link" href="{{ path('app_logout') }}">Se déconnecter</a></li>
+                    {% else %}
+                        <!-- Liens pour les utilisateurs non connectés -->
+                        <li class="nav-item"><a class="nav-link" href="{{ path('register_passager') }}">Inscription Passager</a></li>
+                        <li class="nav-item"><a class="nav-link" href="{{ path('register_conducteur') }}">Inscription Conducteur</a></li>
+                        <li class="nav-item"><a class="nav-link" href="{{ path('app_login') }}">Se connecter</a></li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main>
+        {% block body %}{% endblock %}
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Footer -->
+    <footer class="text-center py-4">
+        <p>&copy; 2024 TRI9NA - Tous droits réservés</p>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    {% block scripts %}{% endblock %}
+</body>
+</html>

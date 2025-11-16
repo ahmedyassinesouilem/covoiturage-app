@@ -1,0 +1,117 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Réclamation{% endblock %}
+
+{% block body %}
+<style>
+    /* Styles généraux */
+    body {
+        background: linear-gradient(135deg, #f5f7fa, #c3cfe2); /* Dégradé professionnel */
+        font-family: 'Roboto', sans-serif;
+        margin: 0;
+        padding: 0;
+        color: #2c3e50;
+    }
+
+    /* Arrière-plan avec image */
+    .background-image {
+        position: relative;
+        min-height: 100vh;
+        padding: 50px 0;
+    }
+
+    .background-image::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: url('/images/passager.jpg') no-repeat center center fixed;
+        background-size: cover;
+        opacity: 0.3; /* Rendre l'image moins visible */
+        filter: blur(5px); /* Ajouter un flou */
+        z-index: 1;
+    }
+
+    /* Superposition pour le contenu */
+    .container {
+        position: relative;
+        z-index: 2;
+        max-width: 800px;
+        margin: 0 auto;
+        background: rgba(255, 255, 255, 0.85); /* Fond blanc translucide */
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    }
+
+    /* En-tête */
+    h1 {
+        font-size: 2.5rem;
+        color: #333; /* Gris foncé */
+        text-align: center;
+        margin-bottom: 10px;
+    }
+
+    /* Formulaires */
+    .form-control {
+        border-radius: 6px;
+        padding: 10px;
+        font-size: 1rem;
+        margin-bottom: 15px;
+    }
+
+    /* Boutons */
+    .btn {
+        display: inline-block;
+        padding: 10px 20px;
+        font-size: 1rem;
+        text-align: center;
+        text-decoration: none;
+        border-radius: 6px;
+        transition: all 0.3s ease;
+    }
+
+    .btn-primary {
+        background-color: #3498db;
+        color: white;
+    }
+
+    .btn-primary:hover {
+        background-color: #2980b9;
+    }
+
+    .btn-primary:focus, .btn-primary:active {
+        background-color: #2980b9;
+    }
+
+    /* Animation */
+    .content-section:hover {
+        transform: translateY(-3px);
+        transition: all 0.3s ease;
+    }
+
+    /* Texte avec contraste */
+    .text-dark {
+        color: #333; /* Gris foncé pour "Bienvenue" */
+    }
+
+    .text-muted {
+        color: #555; /* Gris moyen pour le sous-titre */
+    }
+</style>
+
+<div class="background-image">
+    <div class="container mt-5">
+        <h1 class="text-dark">Créer une réclamation</h1>
+
+        {{ form_start(form) }}
+            <div class="mb-4">
+                {{ form_widget(form) }}
+            </div>
+            <button type="submit" class="btn btn-primary w-100">Envoyer</button>
+        {{ form_end(form) }}
+    </div>
+</div>
+{% endblock %}
