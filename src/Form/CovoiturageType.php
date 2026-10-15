@@ -22,15 +22,20 @@ class CovoiturageType extends AbstractType
             ->add('placedeRencontre')
             ->add('vehicule', EntityType::class, [
                 'class' => Vehicule::class,
-                'choice_label' => 'type',
-            ])
-        ;
+                'choices' => $options['vehicule_choices'],   // 🔥 restreint aux véhicules passés dans l'option
+                'choice_label' => function (Vehicule $vehicule) {
+                    return $vehicule->getType() . ' - ' . $vehicule->getModel() . ' (' . $vehicule->getNbpplace() . ' places)';
+                },
+                'placeholder' => 'Sélectionnez votre véhicule',
+                'attr' => ['class' => 'form-select'],
+            ]);
     }
- 
+
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
             'data_class' => CovoiturageCond::class,
+            'vehicule_choices' => [],   // 🔥 nouvelle option par défaut
         ]);
     }
 }

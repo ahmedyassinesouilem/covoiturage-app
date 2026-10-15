@@ -1,131 +1,246 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Passager{% endblock %}
+{% block title %}Mon espace passager - Tri9na{% endblock %}
+
+{% block styles %}
+<style>
+    .dashboard-header {
+        background: linear-gradient(135deg, #0d1f14 0%, #1a6b3c 100%);
+        border-radius: 24px;
+        padding: 2rem;
+        margin-bottom: 2rem;
+        color: white;
+        box-shadow: var(--shadow);
+    }
+    .dashboard-header h1 {
+        font-family: 'Syne', sans-serif;
+        font-weight: 800;
+        font-size: 2rem;
+        margin-bottom: 0.25rem;
+    }
+    .dashboard-header p {
+        opacity: 0.85;
+        margin-bottom: 0;
+    }
+    .stat-card {
+        background: white;
+        border-radius: 20px;
+        padding: 1.5rem;
+        text-align: center;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        transition: transform 0.2s;
+        height: 100%;
+    }
+    .stat-card:hover {
+        transform: translateY(-5px);
+    }
+    .stat-card i {
+        font-size: 2.2rem;
+        color: var(--primary);
+        margin-bottom: 0.75rem;
+    }
+    .stat-card .stat-number {
+        font-size: 2rem;
+        font-weight: 800;
+        font-family: 'Syne', sans-serif;
+        color: var(--dark);
+    }
+    .stat-card .stat-label {
+        color: var(--muted);
+        font-size: 0.85rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    .info-card, .reservations-card {
+        background: white;
+        border-radius: 24px;
+        padding: 1.8rem;
+        box-shadow: var(--shadow);
+        height: 100%;
+    }
+    .info-card h3, .reservations-card h3 {
+        font-family: 'Syne', sans-serif;
+        font-weight: 700;
+        font-size: 1.4rem;
+        margin-bottom: 1.5rem;
+        border-left: 4px solid var(--accent);
+        padding-left: 1rem;
+    }
+    .info-item {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        margin-bottom: 1rem;
+        padding-bottom: 0.75rem;
+        border-bottom: 1px solid #eef2f0;
+    }
+    .info-item i {
+        width: 32px;
+        color: var(--primary);
+        font-size: 1.2rem;
+    }
+    .info-item strong {
+        width: 100px;
+        color: var(--dark);
+    }
+    .btn-quick {
+        margin-top: 1rem;
+        width: 100%;
+        background: var(--primary);
+        color: white;
+        border: none;
+        padding: 12px;
+        border-radius: 40px;
+        font-weight: 600;
+        transition: all 0.2s;
+    }
+    .btn-quick:hover {
+        background: var(--primary-light);
+        transform: translateY(-2px);
+    }
+    .reservation-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1rem 0;
+        border-bottom: 1px solid #eef2f0;
+    }
+    .reservation-item:last-child {
+        border-bottom: none;
+    }
+    .badge-status {
+        background: #f0f2f0;
+        padding: 4px 10px;
+        border-radius: 40px;
+        font-size: 0.7rem;
+        font-weight: 600;
+        text-transform: uppercase;
+    }
+    .badge-valide { background: #d4edda; color: #155724; }
+    .badge-refuse { background: #f8d7da; color: #721c24; }
+    .badge-attente { background: #fff3cd; color: #856404; }
+    .empty-state {
+        text-align: center;
+        padding: 2rem;
+        color: var(--muted);
+    }
+    @media (max-width: 768px) {
+        .dashboard-header { padding: 1.5rem; }
+        .info-card, .reservations-card { margin-bottom: 1rem; }
+    }
+</style>
+{% endblock %}
 
 {% block body %}
-<div class="background-image">
-    <div class="container mt-5">
-        <h1 class="text-dark">Bienvenue {{ app.user.name }},</h1>
-        <p class="text-center text-muted">Voici votre tableau de bord Passager</p>
+<div class="container py-5">
+    <div class="dashboard-header">
+        <div class="d-flex justify-content-between align-items-center flex-wrap">
+            <div>
+                <h1>Bonjour {{ app.user.name }} 👋</h1>
+                <p>Prêt à voyager ? Découvrez vos prochains trajets et gérez vos réservations</p>
+            </div>
+            <div class="mt-3 mt-md-0">
+                <a href="{{ path('app_covoiturage_disponible') }}" class="btn btn-light rounded-pill px-4 py-2">
+                    <i class="fas fa-search"></i> Trouver un trajet
+                </a>
+            </div>
+        </div>
+    </div>
 
-        <div class="content-section mt-4">
-            <div class="info-left">
-                <h2>Mes Informations</h2>
-                <p><strong>Nom :</strong> {{ app.user.name }}</p>
-                <p><strong>Email :</strong> {{ app.user.email }}</p>
-                <p><strong>Numéro de téléphone :</strong> {{ app.user.numtel }}</p>
-                <div class="mt-4 text-center">
-                    <a href="{{ path('app_covoiturage_disponible') }}" class="btn btn-primary">Voir les Covoiturages Disponibles</a>
+    <div class="row g-4 mb-4">
+        <div class="col-md-4">
+            <div class="stat-card">
+                <i class="fas fa-ticket-alt"></i>
+                <div class="stat-number">{{ reservations|length }}</div>
+                <div class="stat-label">Réservations totales</div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="stat-card">
+                <i class="fas fa-check-circle"></i>
+                <div class="stat-number">{{ reservationsValidees|default(0) }}</div>
+                <div class="stat-label">Validées</div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="stat-card">
+                <i class="fas fa-clock"></i>
+                <div class="stat-number">{{ reservationsEnAttente|default(0) }}</div>
+                <div class="stat-label">En attente</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <!-- Colonne gauche : Infos personnelles + actions rapides -->
+        <div class="col-lg-5">
+            <div class="info-card">
+                <h3><i class="fas fa-user-circle me-2"></i> Mon profil</h3>
+                <div class="info-item">
+                    <i class="fas fa-user"></i>
+                    <strong>Nom complet</strong>
+                    <span>{{ app.user.name }}</span>
                 </div>
+                <div class="info-item">
+                    <i class="fas fa-envelope"></i>
+                    <strong>Email</strong>
+                    <span>{{ app.user.email }}</span>
+                </div>
+                <div class="info-item">
+                    <i class="fas fa-phone-alt"></i>
+                    <strong>Téléphone</strong>
+                    <span>{{ app.user.numtel }}</span>
+                </div>
+                <a href="{{ path('app_covoiturage_disponible') }}" class="btn-quick">
+                    <i class="fas fa-car-side"></i> Explorer les covoiturages
+                </a>
+                <a href="{{ path('reclamation_new') }}" class="btn-quick mt-2" style="background: #f0a500; color:#0d1f14;">
+                    <i class="fas fa-comment-dots"></i> Signaler un problème
+                </a>
+            </div>
+        </div>
+
+        <!-- Colonne droite : Dernières réservations -->
+        <div class="col-lg-7">
+            <div class="reservations-card">
+                <h3><i class="fas fa-history me-2"></i> Mes dernières réservations</h3>
+                {% if reservations is not empty %}
+                    {% for res in reservations|slice(0, 5) %}
+                        <div class="reservation-item">
+                            <div>
+                                <strong>{{ res.covoiturage.villedeDepart }} → {{ res.covoiturage.villeArriver }}</strong><br>
+                                <small class="text-muted">
+                                    <i class="far fa-calendar-alt"></i> {{ res.covoiturage.date|date('d/m/Y H:i') }}
+                                </small>
+                            </div>
+                            <div class="text-end">
+                                {% if res.etat == 'valide' %}
+                                    <span class="badge-status badge-valide">✓ Validée</span>
+                                {% elseif res.etat == 'refuse' %}
+                                    <span class="badge-status badge-refuse">✗ Refusée</span>
+                                {% else %}
+                                    <span class="badge-status badge-attente">⏳ En attente</span>
+                                {% endif %}
+                                <div><small>{{ res.covoiturage.conducteur.name }}</small></div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                    <div class="text-center mt-3">
+                        <a href="{{ path('app_mes_reservations') }}" class="btn btn-outline-primary rounded-pill px-4">
+                            Voir toutes mes réservations <i class="fas fa-arrow-right"></i>
+                        </a>
+                    </div>
+                {% else %}
+                    <div class="empty-state">
+                        <i class="fas fa-car fa-2x mb-3 opacity-25"></i>
+                        <p>Vous n'avez encore aucune réservation.</p>
+                        <a href="{{ path('app_covoiturage_disponible') }}" class="btn btn-primary rounded-pill">
+                            Réserver un trajet maintenant
+                        </a>
+                    </div>
+                {% endif %}
             </div>
         </div>
     </div>
 </div>
-
-
-
-
-<style>
-    /* Arrière-plan avec image */
-    .background-image {
-        position: relative;
-        min-height: 100vh;
-        padding: 50px 0;
-    }
-
-    .background-image::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: url('/images/passager.jpg') no-repeat center center fixed;
-        background-size: cover;
-        opacity: 0.3; /* Rendre l'image moins visible */
-        filter: blur(5px); /* Ajouter un flou */
-        z-index: 1;
-    }
-
-    /* Superposition pour le contenu */
-    .container {
-        position: relative;
-        z-index: 2;
-        max-width: 800px;
-        margin: 0 auto;
-        background: rgba(255, 255, 255, 0.85); /* Fond blanc translucide */
-        padding: 20px;
-        border-radius: 10px;
-        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-    }
-
-    /* En-tête */
-    h1 {
-        font-size: 2.5rem;
-        color: #333; /* Gris foncé */
-        text-align: center;
-        margin-bottom: 10px;
-    }
-
-    p.text-center {
-        font-size: 1.2rem;
-        color: #555; /* Gris moyen pour contraste */
-        margin-bottom: 20px;
-    }
-
-    /* Section principale */
-    .content-section {
-        background-color: #ffffff;
-        padding: 30px;
-        border-radius: 8px;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    }
-
-    h2 {
-        font-size: 1.8rem;
-        color: #2980b9;
-        margin-bottom: 15px;
-    }
-
-    p {
-        font-size: 1rem;
-        line-height: 1.6;
-        margin-bottom: 10px;
-    }
-
-    /* Boutons */
-    .btn {
-        display: inline-block;
-        padding: 10px 20px;
-        font-size: 1rem;
-        text-align: center;
-        text-decoration: none;
-        border-radius: 6px;
-        transition: all 0.3s ease;
-    }
-
-    .btn-primary {
-        background-color: #3498db;
-        color: white;
-    }
-
-    .btn-primary:hover {
-        background-color: #2980b9;
-    }
-
-    /* Animation */
-    .content-section:hover {
-        transform: translateY(-3px);
-        transition: all 0.3s ease;
-    }
-
-    /* Texte avec contraste */
-    .text-dark {
-        color: #333; /* Gris foncé pour "Bienvenue" */
-    }
-
-    .text-muted {
-        color: #555; /* Gris moyen pour le sous-titre */
-    }
-</style>
 {% endblock %}

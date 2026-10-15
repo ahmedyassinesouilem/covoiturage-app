@@ -13,6 +13,12 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Bundle\SecurityBundle\Security;
 use App\Repository\CovoiturageCondRepository;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
+use App\Entity\Reclamation;
+use App\Form\ReclamationType;
+use Symfony\Component\String\Slugger\SluggerInterface;
+use Symfony\Component\HttpFoundation\File\Exception\FileException;
+
 #[IsGranted('ROLE_CONDUCTEUR')]
 #[Route('/conducteur')]
 class ConducteurController extends AbstractController
@@ -24,76 +30,124 @@ class ConducteurController extends AbstractController
         $this->security = $security;
     }
 
-    #[Route('/dashboard', name: 'app_conducteur')]
-    public function index(): Response
-    {
-        return $this->render('main/index.html.twig', [
-            'controller_name' => 'ConducteurController',
-        ]);
-    }
+   // ... dans ConducteurController
 
-    #[Route('/ajout_vehicule', name: 'app_vehicule')]
-    public function ajoutVehicule(Request $request, EntityManagerInterface $entityManager): Response
-    {
-        // Récupérer l'utilisateur connecté (le conducteur)
-        $conducteur = $this->security->getUser();
-
-        // Créer un nouvel objet véhicule
-        $vehicule = new Vehicule();
-        
-        // Associer le conducteur au véhicule
-        $vehicule->setConducteur($conducteur);
-
-        // Créer le formulaire
-        $form = $this->createForm(VehiculeType::class, $vehicule);
-
-        // Gérer la soumission du formulaire
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            // Persister le nouveau véhicule dans la base de données
-            $entityManager->persist($vehicule);
-            $entityManager->flush();
-
-            // Rediriger vers le tableau de bord du conducteur ou une autre page
-            return $this->redirectToRoute('app_conducteur');
+#[Route('/dashboard', name: 'app_conducteur')]
+public function index(EntityManagerInterface $entityManager): Response
+{
+    $conducteur = $this->getUser();
+    
+    // Covoiturages du conducteur
+    $covoiturages = $entityManager->getRepository(CovoiturageCond::class)->findBy([
+        'conducteur' => $conducteur
+    ]);
+    
+    // Statistiques
+    $totalCovoiturages = count($covoiturages);
+    $placesRestantes = 0;
+    $totalReservationsRecues = 0;
+    $reservationsEnAttente = 0;
+    
+    foreach ($covoiturages as $c) {
+        $placesRestantes += $c->getNbplace();
+        $totalReservationsRecues += count($c->getReservations());
+        foreach ($c->getReservations() as $res) {
+            if ($res->getEtat() === 'en_attente') $reservationsEnAttente++;
         }
-
-        // Rendre le formulaire dans le template
-        return $this->render('conducteur/ajout_vehicule.html.twig', [
-            'form' => $form->createView(),
-        ]);
     }
+    
+    // Prochains trajets (date >= aujourd'hui)
+    $now = new \DateTime();
+    $prochainsTrajets = array_filter($covoiturages, function($c) use ($now) {
+        return $c->getDate() >= $now;
+    });
+    usort($prochainsTrajets, fn($a,$b) => $a->getDate() <=> $b->getDate());
+    
+    // Dernières réservations (limite 5)
+    $dernieresReservations = $entityManager->getRepository(Reservation::class)->createQueryBuilder('r')
+        ->join('r.covoiturage', 'c')
+        ->where('c.conducteur = :conducteur')
+        ->setParameter('conducteur', $conducteur)
+        ->orderBy('r.id', 'DESC')
+        ->setMaxResults(5)
+        ->getQuery()
+        ->getResult();
+    
+    return $this->render('conducteur/index.html.twig', [
+        'totalCovoiturages' => $totalCovoiturages,
+        'totalReservationsRecues' => $totalReservationsRecues,
+        'placesRestantes' => $placesRestantes,
+        'reservationsEnAttente' => $reservationsEnAttente,
+        'prochainsTrajets' => $prochainsTrajets,
+        'dernieresReservations' => $dernieresReservations,
+    ]);
+}
+
+
+#[Route('/ajout_vehicule', name: 'app_vehicule')]
+public function ajoutVehicule(Request $request, EntityManagerInterface $entityManager, SluggerInterface $slugger): Response
+{
+    $conducteur = $this->getUser();
+    $vehicule = new Vehicule();
+    $vehicule->setConducteur($conducteur);
+    $form = $this->createForm(VehiculeType::class, $vehicule);
+    $form->handleRequest($request);
+
+    if ($form->isSubmitted() && $form->isValid()) {
+        $imageFile = $form->get('imageFile')->getData();
+        if ($imageFile) {
+            $originalFilename = pathinfo($imageFile->getClientOriginalName(), PATHINFO_FILENAME);
+            $safeFilename = $slugger->slug($originalFilename);
+            $newFilename = $safeFilename.'-'.uniqid().'.'.$imageFile->guessExtension();
+            try {
+                $imageFile->move(
+                    $this->getParameter('vehicules_directory'),
+                    $newFilename
+                );
+                $vehicule->setImageFilename($newFilename);
+            } catch (FileException $e) {
+                $this->addFlash('error', 'Erreur lors de l\'upload de l\'image.');
+            }
+        }
+        $entityManager->persist($vehicule);
+        $entityManager->flush();
+        $this->addFlash('success', 'Véhicule ajouté avec succès.');
+        return $this->redirectToRoute('app_mes_vehicules');
+    }
+
+    return $this->render('conducteur/ajout_vehicule.html.twig', [
+        'form' => $form->createView(),
+    ]);
+}
     #[Route('/ajout_covoiturage', name: 'app_covoiturage')]
-    public function ajoutCovoiturage(Request $request, EntityManagerInterface $entityManager): Response
-    {
-        // Récupérer l'utilisateur connecté (le conducteur)
-        $conducteur = $this->security->getUser();
-        
-        // Créer un nouvel objet CovoiturageCond
-        $covoiturage = new CovoiturageCond();
-        
-        // Associer le conducteur au covoiturage
-        $covoiturage->setConducteur($conducteur);
+public function ajoutCovoiturage(Request $request, EntityManagerInterface $entityManager): Response
+{
+    $conducteur = $this->security->getUser();
     
-        // Créer le formulaire pour le covoiturage
-        $form = $this->createForm(CovoiturageType::class, $covoiturage);
-        $form->handleRequest($request);
+    // Récupérer uniquement les véhicules de ce conducteur
+    $vehicules = $entityManager->getRepository(Vehicule::class)->findBy(['conducteur' => $conducteur]);
 
-        if ($form->isSubmitted() && $form->isValid()) {
-        // Persister le covoiturage
-            $entityManager->persist($covoiturage);
-            $entityManager->flush();
+    $covoiturage = new CovoiturageCond();
+    $covoiturage->setConducteur($conducteur);
 
+    // Passer la liste des véhicules en option du formulaire
+    $form = $this->createForm(CovoiturageType::class, $covoiturage, [
+        'vehicule_choices' => $vehicules,
+    ]);
+
+    $form->handleRequest($request);
+
+    if ($form->isSubmitted() && $form->isValid()) {
+        $entityManager->persist($covoiturage);
+        $entityManager->flush();
+        $this->addFlash('success', 'Covoiturage ajouté avec succès.');
         return $this->redirectToRoute('app_conducteur');
-        }
-
-    
-        // Rendre le formulaire dans le template
-        return $this->render('conducteur/ajout_covoiturage.html.twig', [
-            'form' => $form->createView(),
-        ]);
     }
+
+    return $this->render('conducteur/ajout_covoiturage.html.twig', [
+        'form' => $form->createView(),
+    ]);
+}
     #[Route('/mes_covoiturages', name: 'app_mes_covoiturages')]
     public function mesCovoiturages(EntityManagerInterface $entityManager): Response
     {
@@ -255,7 +309,40 @@ public function creerReclamation(Request $request, EntityManagerInterface $entit
         'form' => $form->createView(),
     ]);
 }
+#[Route('/mes_vehicules', name: 'app_mes_vehicules')]
+public function mesVehicules(EntityManagerInterface $entityManager): Response
+{
+    $conducteur = $this->getUser();
+    $vehicules = $conducteur->getVehicules(); 
 
+    return $this->render('conducteur/mes_vehicules.html.twig', [
+        'vehicules' => $vehicules,
+    ]);
+}
 
+#[Route('/vehicule/supprimer/{id}', name: 'app_vehicule_supprimer')]
+public function supprimerVehicule(int $id, EntityManagerInterface $entityManager): Response
+{
+    $conducteur = $this->getUser();
+    $vehicule = $entityManager->getRepository(Vehicule::class)->find($id);
+
+    if (!$vehicule || $vehicule->getConducteur() !== $conducteur) {
+        throw $this->createAccessDeniedException();
+    }
+
+    // Supprimer le fichier image s’il existe
+    if ($vehicule->getImageFilename()) {
+        $imagePath = $this->getParameter('vehicules_directory') . '/' . $vehicule->getImageFilename();
+        if (file_exists($imagePath)) {
+            unlink($imagePath);
+        }
+    }
+
+    $entityManager->remove($vehicule);
+    $entityManager->flush();
+    $this->addFlash('success', 'Véhicule supprimé.');
+
+    return $this->redirectToRoute('app_mes_vehicules');
+}
     
 }

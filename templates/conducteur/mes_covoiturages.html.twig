@@ -1,143 +1,233 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Mes Covoiturages{% endblock %}
+{% block title %}Mes covoiturages - Tri9na{% endblock %}
 
-{% block body %}
+{% block styles %}
 <style>
-    /* Styles généraux */
-    body {
-        background: linear-gradient(135deg, #f5f7fa, #c3cfe2); /* Dégradé professionnel */
-        font-family: 'Roboto', sans-serif; /* Police moderne */
-        margin: 0;
-        padding: 0;
-        color: #2c3e50;
-    }
-
-    /* Conteneur principal */
-    .container {
-        max-width: 1000px;
-        margin: 50px auto;
-        padding: 30px;
-        background: #ffffff;
-        border-radius: 8px;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-    }
-
-    /* En-tête de la page */
-    h1 {
-        font-size: 2.2rem;
-        color: #34495e;
-        margin-bottom: 20px;
-        border-bottom: 2px solid #3498db;
-        padding-bottom: 10px;
-    }
-
-    /* Bouton Ajouter un covoiturage */
-    .btn-success {
-        background-color: #27ae60;
+    .covoiturages-header {
+        background: linear-gradient(135deg, #0d1f14 0%, #1a6b3c 100%);
+        border-radius: 24px;
+        padding: 2rem;
+        margin-bottom: 2rem;
         color: white;
-        font-size: 1rem;
-        padding: 10px 20px;
-        border-radius: 5px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+    }
+    .covoiturages-header h1 {
+        font-family: 'Syne', sans-serif;
+        font-weight: 800;
+        font-size: 1.8rem;
+        margin: 0;
+    }
+    .covoiturages-header p {
+        opacity: 0.85;
+        margin: 0.25rem 0 0;
+    }
+    .btn-new-trajet {
+        background: var(--accent);
+        color: var(--dark);
+        border: none;
+        border-radius: 40px;
+        padding: 0.7rem 1.5rem;
+        font-weight: 700;
+        transition: all 0.2s;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+    }
+    .btn-new-trajet:hover {
+        background: #f5b81b;
+        transform: translateY(-2px);
+        color: var(--dark);
     }
 
-    .btn-success:hover {
-        background-color: #2ecc71;
-    }
-
-    /* Table */
-    table {
+    /* Table moderne */
+    .trajets-table {
+        background: white;
+        border-radius: 20px;
+        overflow: hidden;
+        box-shadow: var(--shadow);
         width: 100%;
-        margin-top: 20px;
         border-collapse: collapse;
     }
-
-    th, td {
-        padding: 12px;
+    .trajets-table thead tr {
+        background: var(--dark);
+        color: white;
+    }
+    .trajets-table th {
+        padding: 1rem;
+        font-weight: 600;
+        font-size: 0.85rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
         text-align: left;
-        border: 1px solid #ecf0f1;
     }
-
-    th {
-        background-color: #34495e;
+    .trajets-table td {
+        padding: 1rem;
+        border-bottom: 1px solid #eef2f0;
+        vertical-align: middle;
+    }
+    .trajets-table tbody tr:hover {
+        background: #f9fbf9;
+    }
+    .badge-places {
+        background: #f0f7f3;
+        color: var(--primary);
+        border-radius: 40px;
+        padding: 4px 12px;
+        font-weight: 600;
+        font-size: 0.8rem;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        width: fit-content;
+    }
+    .badge-sature {
+        background: #f8d7da;
+        color: #721c24;
+    }
+    .btn-icon {
+        background: none;
+        border: none;
+        padding: 6px 12px;
+        border-radius: 8px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        transition: 0.2s;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+    }
+    .btn-edit {
+        background: rgba(26,107,60,0.1);
+        color: var(--primary);
+    }
+    .btn-edit:hover {
+        background: var(--primary);
         color: white;
     }
-
-    tr:nth-child(even) {
-        background-color: #ecf0f1;
+    .btn-delete {
+        background: rgba(220,53,69,0.1);
+        color: #dc3545;
     }
-
-    tr:hover {
-        background-color: #bdc3c7;
-    }
-    
-
-    /* Alert */
-    .alert-warning {
-        background-color: #f39c12;
+    .btn-delete:hover {
+        background: #dc3545;
         color: white;
-        padding: 15px;
-        font-size: 1rem;
-        border-radius: 5px;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
     }
-
-    /* Animation subtile */
-    @keyframes fadeIn {
-        from {
-            opacity: 0;
-            transform: translateY(10px);
-        }
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
+    .empty-state {
+        text-align: center;
+        padding: 3rem;
+        background: white;
+        border-radius: 24px;
+        color: var(--muted);
     }
-
-    .container {
-        animation: fadeIn 0.8s ease;
+    .empty-state i {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+        opacity: 0.5;
+    }
+    @media (max-width: 768px) {
+        .covoiturages-header { flex-direction: column; text-align: center; gap: 1rem; }
+        .trajets-table, .trajets-table tbody, .trajets-table tr, .trajets-table td {
+            display: block;
+            width: 100%;
+        }
+        .trajets-table thead { display: none; }
+        .trajets-table tr {
+            margin-bottom: 1rem;
+            border: 1px solid #eef2f0;
+            border-radius: 16px;
+            padding: 1rem;
+        }
+        .trajets-table td {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #eef2f0;
+            padding: 0.75rem 0;
+        }
+        .trajets-table td:last-child { border-bottom: none; }
+        .trajets-table td::before {
+            content: attr(data-label);
+            font-weight: 700;
+            color: var(--dark);
+            width: 40%;
+        }
     }
 </style>
+{% endblock %}
 
-<div class="container mt-4">
-    <h1>Mes Covoiturages</h1>
-
-    <a href="{{ path('app_covoiturage') }}" class="btn btn-success mb-3">
-        <i class="bi bi-plus-circle"></i> Ajouter un nouveau covoiturage
-    </a>
+{% block body %}
+<div class="container py-5">
+    <div class="covoiturages-header">
+        <div>
+            <h1>🚗 Mes covoiturages</h1>
+            <p>Gérez vos trajets publiés, modifiez ou supprimez-les</p>
+        </div>
+        <a href="{{ path('app_covoiturage') }}" class="btn-new-trajet">
+            <i class="fas fa-plus-circle"></i> Nouveau trajet
+        </a>
+    </div>
 
     {% if covoiturages is empty %}
-        <div class="alert alert-warning" role="alert">
-            Aucun covoiturage créer pour le moment.
+        <div class="empty-state">
+            <i class="fas fa-road"></i>
+            <p>Vous n’avez encore publié aucun covoiturage.</p>
+            <a href="{{ path('app_covoiturage') }}" class="btn-t-primary mt-3">
+                <i class="fas fa-plus"></i> Créer mon premier trajet
+            </a>
         </div>
     {% else %}
-        <table class="table table-bordered table-striped">
-            <thead class="table-dark">
-                <tr>
-                    <th>Départ</th>
-                    <th>Destination</th>
-                    <th>Nombre de places</th>
-                    <th>Date</th>
-                    <th>Véhicule</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for covoiturage in covoiturages %}
+        <div class="table-responsive">
+            <table class="trajets-table">
+                <thead>
                     <tr>
-                        <td>{{ covoiturage.villedeDepart }}</td>
-                        <td>{{ covoiturage.villeArriver }}</td>
-                        <td>{{ covoiturage.nbplace }}</td>
-                        <td>{{ covoiturage.date|date('d/m/Y H:i') }}</td>
-                        <td>{{ covoiturage.vehicule.type }}</td>
-                        <td>
-                            <a href="{{ path('app_covoiturage_modifier', { id: covoiturage.id }) }}" class="btn btn-primary btn-sm">Modifier</a>
-                            <a href="{{ path('app_covoiturage_suprimer', { id: covoiturage.id }) }}" class="btn btn-danger btn-sm">Supprimer</a>
-                        </td>
+                        <th>Départ</th>
+                        <th>Destination</th>
+                        <th>Places</th>
+                        <th>Date & heure</th>
+                        <th>Véhicule</th>
+                        <th>Actions</th>
                     </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+                </thead>
+                <tbody>
+                    {% for covoiturage in covoiturages %}
+                        <tr>
+                            <td data-label="Départ">
+                                <strong>{{ covoiturage.villedeDepart }}</strong>
+                            </td>
+                            <td data-label="Destination">
+                                {{ covoiturage.villeArriver }}
+                            </td>
+                            <td data-label="Places">
+                                <span class="badge-places {{ covoiturage.staurer ? 'badge-sature' : '' }}">
+                                    <i class="fas fa-chair"></i>
+                                    {{ covoiturage.staurer ? 'Complet' : covoiturage.nbplace ~ ' place(s)' }}
+                                </span>
+                            </td>
+                            <td data-label="Date">
+                                {{ covoiturage.date|date('d/m/Y H:i') }}
+                            </td>
+                            <td data-label="Véhicule">
+                                {{ covoiturage.vehicule.type }}
+                            </td>
+                            <td data-label="Actions">
+                                <a href="{{ path('app_covoiturage_modifier', { id: covoiturage.id }) }}" class="btn-icon btn-edit">
+                                    <i class="fas fa-edit"></i> Modifier
+                                </a>
+                                <a href="{{ path('app_covoiturage_suprimer', { id: covoiturage.id }) }}" class="btn-icon btn-delete ms-2" onclick="return confirm('Supprimer ce covoiturage ?')">
+                                    <i class="fas fa-trash-alt"></i> Supprimer
+                                </a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
     {% endif %}
 </div>
 {% endblock %}

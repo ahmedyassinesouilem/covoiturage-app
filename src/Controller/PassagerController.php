@@ -12,17 +12,37 @@ use Symfony\Component\Routing\Annotation\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use App\Entity\Reclamation;
 use App\Form\ReclamationType;
+use App\Entity\Conducteur;
 #[IsGranted('ROLE_PASSAGER')]
 #[Route('/passager')]
 class PassagerController extends AbstractController
 {
-    #[Route('/dashboard', name: 'app_passager')]
-    public function index(): Response
-    {
-        return $this->render('passager/index.html.twig', [
-            'controller_name' => 'PassagerController',
-        ]);
+   // ... dans PassagerController
+
+#[Route('/dashboard', name: 'app_passager')]
+public function index(EntityManagerInterface $entityManager): Response
+{
+    $passager = $this->getUser();
+    
+    // Récupérer toutes les réservations du passager
+    $reservations = $entityManager->getRepository(Reservation::class)->findBy([
+        'passager' => $passager
+    ], ['id' => 'DESC']);
+    
+    // Compter les réservations par état
+    $validees = 0;
+    $enAttente = 0;
+    foreach ($reservations as $res) {
+        if ($res->getEtat() === 'valide') $validees++;
+        elseif ($res->getEtat() === 'en_attente') $enAttente++;
     }
+    
+    return $this->render('passager/index.html.twig', [
+        'reservations' => $reservations,
+        'reservationsValidees' => $validees,
+        'reservationsEnAttente' => $enAttente,
+    ]);
+}
 
     #[Route('/covoiturageDisponible', name: 'app_covoiturage_disponible')]
     public function afficher(CovoiturageCondRepository $covoiturageRepository): Response
@@ -132,7 +152,25 @@ class PassagerController extends AbstractController
             'covoiturages' => $covoiturages,
         ]);
     }
-   
+  // src/Controller/PassagerController.php
+
+#[Route('/conducteur/{id}', name: 'app_voir_conducteur')]
+public function voirConducteur(int $id, EntityManagerInterface $entityManager): Response
+{
+    $covoiturage = $entityManager->getRepository(CovoiturageCond::class)->find($id);
+    if (!$covoiturage) {
+        throw $this->createNotFoundException('Covoiturage introuvable.');
+    }
+
+    $conducteur = $covoiturage->getConducteur(); // Récupère le bon conducteur lié à ce covoiturage
+    $vehicule = $covoiturage->getVehicule();
+
+    return $this->render('passager/profil_conducteur.html.twig', [
+        'conducteur' => $conducteur,
+        'vehicule' => $vehicule,
+        'covoiturage' => $covoiturage,
+    ]);
+}
 
     
 }

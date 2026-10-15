@@ -1,1 +1,201 @@
 {% extends 'base.html.twig' %}
+
+{% block title %}Espace conducteur - Tri9na{% endblock %}
+
+{% block styles %}
+<style>
+    .dashboard-header {
+        background: linear-gradient(135deg, #0d1f14 0%, #1a6b3c 100%);
+        border-radius: 24px;
+        padding: 2rem;
+        margin-bottom: 2rem;
+        color: white;
+    }
+    .stat-number-lg {
+        font-size: 2.2rem;
+        font-weight: 800;
+        font-family: 'Syne', sans-serif;
+        line-height: 1;
+    }
+    .stat-card {
+        background: white;
+        border-radius: 20px;
+        padding: 1.2rem;
+        transition: 0.2s;
+        height: 100%;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+    }
+    .stat-card i {
+        font-size: 2rem;
+        color: var(--primary);
+    }
+    .trajet-card, .reservation-card {
+        background: white;
+        border-radius: 24px;
+        padding: 1.5rem;
+        box-shadow: var(--shadow);
+        margin-bottom: 1.5rem;
+    }
+    .trajet-header, .reservation-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: 1px solid #eef2f0;
+        padding-bottom: 0.75rem;
+        margin-bottom: 1rem;
+    }
+    .trajet-title {
+        font-weight: 700;
+        font-size: 1.2rem;
+    }
+    .badge-statut {
+        background: #f0f2f0;
+        border-radius: 30px;
+        padding: 4px 12px;
+        font-size: 0.7rem;
+        font-weight: 600;
+    }
+    .badge-sature { background: #f8d7da; color:#721c24; }
+    .badge-dispo { background: #d4edda; color:#155724; }
+    .btn-action-sm {
+        padding: 5px 12px;
+        border-radius: 40px;
+        font-size: 0.8rem;
+    }
+    .empty-msg {
+        text-align: center;
+        padding: 2rem;
+        color: var(--muted);
+    }
+</style>
+{% endblock %}
+
+{% block body %}
+<div class="container py-5">
+    <div class="dashboard-header">
+        <div class="d-flex justify-content-between align-items-center flex-wrap">
+            <div>
+                <h1>Bienvenue, conducteur {{ app.user.name }} 🚗</h1>
+                <p>Gérez vos trajets, suivez les réservations et partez serein</p>
+            </div>
+            <div class="mt-3 mt-md-0">
+                <a href="{{ path('app_covoiturage') }}" class="btn btn-light rounded-pill px-4 py-2">
+                    <i class="fas fa-plus-circle"></i> Nouveau trajet
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4 mb-5">
+        <div class="col-md-3">
+            <div class="stat-card d-flex align-items-center gap-3">
+                <i class="fas fa-route"></i>
+                <div>
+                    <div class="stat-number-lg">{{ totalCovoiturages|default(0) }}</div>
+                    <div class="text-muted small">Trajets publiés</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stat-card d-flex align-items-center gap-3">
+                <i class="fas fa-users"></i>
+                <div>
+                    <div class="stat-number-lg">{{ totalReservationsRecues|default(0) }}</div>
+                    <div class="text-muted small">Réservations reçues</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stat-card d-flex align-items-center gap-3">
+                <i class="fas fa-chair"></i>
+                <div>
+                    <div class="stat-number-lg">{{ placesRestantes|default(0) }}</div>
+                    <div class="text-muted small">Places totales</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stat-card d-flex align-items-center gap-3">
+                <i class="fas fa-clock"></i>
+                <div>
+                    <div class="stat-number-lg">{{ reservationsEnAttente|default(0) }}</div>
+                    <div class="text-muted small">Demandes en attente</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-lg-6">
+            <div class="trajet-card">
+                <div class="trajet-header">
+                    <h5 class="mb-0"><i class="fas fa-calendar-week me-2"></i> Mes prochains trajets</h5>
+                    <a href="{{ path('app_mes_covoiturages') }}" class="small">Voir tout →</a>
+                </div>
+                {% if prochainsTrajets is not empty %}
+                    {% for trajet in prochainsTrajets %}
+                        <div class="border-bottom pb-3 mb-3">
+                            <div class="d-flex justify-content-between">
+                                <div>
+                                    <strong>{{ trajet.villedeDepart }} → {{ trajet.villeArriver }}</strong>
+                                    <div class="small text-muted">
+                                        <i class="far fa-calendar-alt"></i> {{ trajet.date|date('d/m/Y H:i') }}
+                                    </div>
+                                </div>
+                                <div class="text-end">
+                                    <span class="badge-statut {{ trajet.staurer ? 'badge-sature' : 'badge-dispo' }}">
+                                        {{ trajet.staurer ? 'Complet' : trajet.nbplace ~ ' places' }}
+                                    </span>
+                                    <div class="mt-1">
+                                        <a href="{{ path('app_covoiturage_modifier', {id: trajet.id}) }}" class="btn btn-sm btn-outline-secondary btn-action-sm">
+                                            <i class="fas fa-edit"></i>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="empty-msg">
+                        <i class="fas fa-road fa-2x mb-2 opacity-25"></i>
+                        <p>Aucun trajet à venir. <a href="{{ path('app_covoiturage') }}">Publiez-en un</a> !</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="col-lg-6">
+            <div class="reservation-card">
+                <div class="reservation-header">
+                    <h5 class="mb-0"><i class="fas fa-bell me-2"></i> Dernières demandes de réservation</h5>
+                    <a href="{{ path('app_conducteur_reservations') }}" class="small">Gérer →</a>
+                </div>
+                {% if dernieresReservations is not empty %}
+                    {% for res in dernieresReservations %}
+                        <div class="d-flex justify-content-between align-items-center border-bottom pb-3 mb-3">
+                            <div>
+                                <strong>{{ res.passager.name }}</strong><br>
+                                <small>{{ res.covoiturage.villedeDepart }} → {{ res.covoiturage.villeArriver }}</small>
+                            </div>
+                            <div class="text-end">
+                                <span class="badge badge-attente bg-warning bg-opacity-25 text-dark px-3 py-1 rounded-pill">
+                                    {{ res.etat }}
+                                </span>
+                                <div class="mt-1">
+                                    <a href="{{ path('app_reservation_valider', {id: res.id}) }}" class="btn btn-sm btn-success btn-action-sm">Valider</a>
+                                    <a href="{{ path('app_reservation_refuser', {id: res.id}) }}" class="btn btn-sm btn-danger btn-action-sm">Refuser</a>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="empty-msg">
+                        <i class="fas fa-inbox fa-2x mb-2 opacity-25"></i>
+                        <p>Aucune demande en attente.</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

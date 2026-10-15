@@ -1,0 +1,187 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Profil du conducteur - Tri9na{% endblock %}
+
+{% block styles %}
+<style>
+    .profile-header {
+        background: linear-gradient(135deg, #0d1f14 0%, #1a6b3c 100%);
+        border-radius: 24px;
+        padding: 2rem;
+        margin-bottom: 2rem;
+        color: white;
+        text-align: center;
+    }
+    .profile-header h1 {
+        font-family: 'Syne', sans-serif;
+        font-weight: 800;
+        font-size: 1.8rem;
+    }
+    .info-card {
+        background: white;
+        border-radius: 20px;
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+        box-shadow: var(--shadow);
+    }
+    .driver-photo {
+        width: 100px;
+        height: 100px;
+        border-radius: 50%;
+        object-fit: cover;
+        background: #eef2f0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 1rem;
+        cursor: pointer;
+        transition: transform 0.2s;
+    }
+    .driver-photo:hover {
+        transform: scale(1.05);
+    }
+    .driver-photo i {
+        font-size: 3rem;
+        color: var(--muted);
+    }
+    .vehicule-img {
+        width: 100%;
+        max-height: 200px;
+        object-fit: cover;
+        border-radius: 16px;
+        cursor: pointer;
+        transition: transform 0.2s;
+    }
+    .vehicule-img:hover {
+        transform: scale(1.02);
+    }
+    .badge-info {
+        background: #f0f7f3;
+        color: var(--primary);
+        padding: 8px 16px;
+        border-radius: 40px;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+    }
+    .btn-back {
+        background: var(--accent);
+        color: var(--dark);
+        border-radius: 40px;
+        padding: 0.6rem 1.5rem;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+    }
+    /* Modal personnalisé */
+    .modal-image {
+        max-width: 90vw;
+        max-height: 90vh;
+        margin: auto;
+        display: block;
+        border-radius: 12px;
+    }
+</style>
+{% endblock %}
+
+{% block body %}
+<div class="container py-5">
+    <div class="profile-header">
+        <h1>👤 Conducteur</h1>
+        <p>{{ covoiturage.villedeDepart }} → {{ covoiturage.villeArriver }}</p>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-md-6">
+            <div class="info-card text-center">
+                {# Avatar cliquable #}
+                <div class="driver-photo mx-auto" data-bs-toggle="modal" data-bs-target="#imageModal" onclick="showImage(this)">
+                    <i class="fas fa-user-circle"></i>
+                </div>
+                <h3>{{ conducteur.name }}</h3>
+                <div class="d-flex justify-content-center gap-3 mt-3">
+                    <div class="badge-info">
+                        <i class="fas fa-star"></i> 4.8 ★
+                    </div>
+                    <div class="badge-info">
+                        <i class="fas fa-car"></i> {{ conducteur.vehicules|length }} véhicule(s)
+                    </div>
+                </div>
+                <hr>
+                <div class="text-start">
+                    <p><i class="fas fa-envelope me-2"></i> {{ conducteur.email }}</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="info-card">
+                <h4><i class="fas fa-car-side me-2"></i> Véhicule pour ce trajet</h4>
+                <hr>
+                {% if vehicule %}
+                    {% if vehicule.imageFilename %}
+                        <img src="{{ asset('uploads/vehicules/' ~ vehicule.imageFilename) }}" 
+                             alt="Véhicule" 
+                             class="vehicule-img mb-3"
+                             data-bs-toggle="modal" 
+                             data-bs-target="#imageModal"
+                             onclick="showImage(this)">
+                    {% else %}
+                        <div class="vehicule-img bg-light d-flex align-items-center justify-content-center mb-3"
+                             data-bs-toggle="modal" 
+                             data-bs-target="#imageModal"
+                             onclick="showImage(this)">
+                            <i class="fas fa-car fa-3x text-muted"></i>
+                        </div>
+                    {% endif %}
+                    <div class="d-flex flex-wrap gap-2 mb-3">
+                        <span class="badge-info"><i class="fas fa-car"></i> {{ vehicule.type }}</span>
+                        <span class="badge-info"><i class="fas fa-tachometer-alt"></i> {{ vehicule.model }}</span>
+                        <span class="badge-info"><i class="fas fa-chair"></i> {{ vehicule.nbpplace }} places</span>
+                    </div>
+                {% else %}
+                    <p class="text-muted">Aucun véhicule renseigné pour ce trajet.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <div class="text-center mt-4">
+        <a href="{{ path('app_covoiturage_disponible') }}" class="btn-back">
+            <i class="fas fa-arrow-left"></i> Retour à la recherche
+        </a>
+    </div>
+</div>
+
+<!-- Modal pour agrandir l'image -->
+<div class="modal fade" id="imageModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content bg-transparent border-0">
+            <div class="modal-body text-center p-0">
+                <img id="modalImage" src="" alt="Agrandissement" class="modal-image">
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function showImage(element) {
+    // Si l'élément est une image, on prend sa source
+    let imgSrc = '';
+    if (element.tagName === 'IMG') {
+        imgSrc = element.src;
+    } 
+    // Sinon, s'il s'agit d'une div contenant une icône (avatar par défaut)
+    else if (element.querySelector('i')) {
+        // On peut afficher une image par défaut (ex: logo utilisateur)
+        imgSrc = "{{ asset('images/default-avatar.png') }}";
+    }
+    // Pour le véhicule sans image (icône), on affiche également un placeholder
+    if (!imgSrc && element.classList.contains('vehicule-img')) {
+        imgSrc = "{{ asset('images/default-car.png') }}";
+    }
+    document.getElementById('modalImage').src = imgSrc;
+}
+</script>
+{% endblock %}

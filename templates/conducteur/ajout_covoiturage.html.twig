@@ -2,133 +2,422 @@
 
 {% block title %}Ajout Covoiturage{% endblock %}
 
-{% block body %}
+{% block styles %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" />
 <style>
-    /* Styles généraux */
-    body {
-        background: linear-gradient(135deg, #f5f7fa, #c3cfe2); /* Dégradé professionnel */
-        font-family: 'Roboto', sans-serif; /* Police moderne */
-        margin: 0;
-        padding: 0;
-        color: #2c3e50;
-    }
-
-    /* Conteneur principal */
-    .container {
-        max-width: 800px;
-        margin: 50px auto;
-        padding: 30px;
-        background: #ffffff;
-        border-radius: 8px;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-    }
-
-    /* En-tête de la page */
-    h1 {
-        font-size: 2.2rem;
-        color: #34495e;
-        margin-bottom: 20px;
-        border-bottom: 2px solid #3498db;
-        padding-bottom: 10px;
-    }
-
-    /* Liste des réservations */
-    .list-group-item {
-        background-color: #ffffff;
-        border: 1px solid #ecf0f1;
-        border-radius: 8px;
-        margin-bottom: 15px;
-        padding: 20px;
-        box-shadow: 0 1px 5px rgba(0, 0, 0, 0.1);
-        transition: transform 0.2s ease, box-shadow 0.2s ease;
-    }
-
-    .list-group-item:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-    }
-
-    /* Badges pour le statut */
-    .badge-success {
-        background-color: #27ae60;
+    .page-header {
+        background: linear-gradient(135deg, #0d1f14 0%, #1a6b3c 100%);
+        border-radius: 24px;
+        padding: 2rem;
+        margin-bottom: 2rem;
         color: white;
-        padding: 6px 12px;
-        font-size: 0.9rem;
-        border-radius: 12px;
-    }
-
-    .badge-warning {
-        background-color: #f39c12;
-        color: white;
-        padding: 6px 12px;
-        font-size: 0.9rem;
-        border-radius: 12px;
-    }
-
-    /* Texte centré */
-    .text-center {
         text-align: center;
     }
-
-    /* Animation subtile */
-    @keyframes fadeIn {
-        from {
-            opacity: 0;
-            transform: translateY(10px);
-        }
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
+    .page-header h1 {
+        font-family: 'Syne', sans-serif;
+        font-weight: 800;
+        font-size: 1.8rem;
+        margin-bottom: 0.5rem;
+    }
+    .page-header p {
+        opacity: 0.85;
+        font-size: 0.95rem;
     }
 
-    .list-group-item {
-        animation: fadeIn 0.8s ease;
+    #map-wrapper {
+        background: white;
+        border-radius: 24px;
+        box-shadow: var(--shadow);
+        padding: 2rem;
+        margin-bottom: 2rem;
+        max-width: 700px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    #map-wrapper h2 {
+        font-family: 'Syne', sans-serif;
+        font-weight: 700;
+        font-size: 1rem;
+        color: var(--dark);
+        margin-bottom: 12px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    #map {
+        width: 100%;
+        height: 420px;
+        border-radius: 12px;
+        border: 1.5px solid #e2e8e6;
+        display: block;
+    }
+
+    .alert-map {
+        background: #f0faf4;
+        border: 1px solid #a8d5b5;
+        border-radius: 12px;
+        padding: 10px 14px;
+        font-size: 0.88rem;
+        color: #1a6b3c;
+        margin-bottom: 14px;
+    }
+
+    .location-preview {
+        margin-top: 14px;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+    }
+
+    .location-box {
+        background: #f8f9fa;
+        border: 1.5px solid #e2e8e6;
+        border-radius: 12px;
+        padding: 10px 14px;
+        font-size: 0.9rem;
+    }
+
+    .location-box.depart  { border-left: 4px solid #1a6b3c; }
+    .location-box.arrivee { border-left: 4px solid #e74c3c; }
+
+    .location-box strong {
+        display: block;
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        color: #7f8c8d;
+        margin-bottom: 4px;
+    }
+
+    .place-name {
+        font-weight: 500;
+        color: var(--dark);
+        min-height: 18px;
+    }
+
+    .form-card {
+        background: white;
+        border-radius: 24px;
+        padding: 2rem;
+        box-shadow: var(--shadow);
+        max-width: 700px;
+        margin: 0 auto;
+    }
+
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+
+    .form-group label,
+    .form-label {
+        font-weight: 600;
+        color: var(--dark);
+        margin-bottom: 0.5rem;
+        display: block;
+        font-size: 0.85rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .form-control,
+    .form-select {
+        width: 100%;
+        padding: 0.75rem 1rem;
+        font-size: 0.95rem;
+        border: 1.5px solid #e2e8e6;
+        border-radius: 12px;
+        transition: all 0.2s;
+        font-family: 'DM Sans', sans-serif;
+        box-sizing: border-box;
+    }
+
+    .form-control:focus,
+    .form-select:focus {
+        border-color: #1a6b3c;
+        outline: none;
+        box-shadow: 0 0 0 3px rgba(26,107,60,0.1);
+    }
+
+    .form-control-map {
+        width: 100%;
+        padding: 0.75rem 1rem;
+        font-size: 0.95rem;
+        border: 1.5px solid #e2e8e6;
+        border-radius: 12px;
+        background: #f8f9fa;
+        color: #555;
+        cursor: not-allowed;
+        box-sizing: border-box;
+        font-family: 'DM Sans', sans-serif;
+    }
+
+    .btn-reset {
+        margin-top: 12px;
+        font-size: 0.85rem;
+        padding: 6px 16px;
+        border: 1.5px solid #e2e8e6;
+        border-radius: 40px;
+        background: white;
+        cursor: pointer;
+        font-family: 'DM Sans', sans-serif;
+        transition: all 0.2s;
+    }
+
+    .btn-reset:hover {
+        border-color: #1a6b3c;
+        color: #1a6b3c;
+    }
+
+    .btn-submit {
+        background: #1a6b3c;
+        color: white;
+        border: none;
+        border-radius: 40px;
+        padding: 0.85rem;
+        font-weight: 700;
+        font-size: 1rem;
+        width: 100%;
+        margin-top: 10px;
+        transition: all 0.2s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        cursor: pointer;
+    }
+
+    .btn-submit:hover:not(:disabled) {
+        background: #145530;
+        transform: translateY(-2px);
+    }
+
+    .btn-submit:disabled {
+        background: #aaa;
+        cursor: not-allowed;
+        transform: none;
     }
 </style>
+{% endblock %}
 
-<div class="container mt-5">
-    <h1 class="text-center mb-4">Ajouter un Covoiturage</h1>
+{% block body %}
+<div class="container py-5">
 
-    {# Formulaire d'ajout de covoiturage avec Bootstrap #}
-    <div class="card shadow-sm">
-        <div class="card-body">
-            {{ form_start(form) }}
-
-                <div class="mb-3">
-                    {{ form_label(form.villedeDepart, 'Ville de départ', {'label_attr': {'class': 'form-label'}}) }}
-                    {{ form_widget(form.villedeDepart, { 'attr': { 'class': 'form-control' } }) }}
-                </div>
-
-                <div class="mb-3">
-                    {{ form_label(form.villeArriver, 'Ville d\'arrivée', {'label_attr': {'class': 'form-label'}}) }}
-                    {{ form_widget(form.villeArriver, { 'attr': { 'class': 'form-control' } }) }}
-                </div>
-
-                <div class="mb-3">
-                    {{ form_label(form.placedeRencontre, 'Lieu de rencontre', {'label_attr': {'class': 'form-label'}}) }}
-                    {{ form_widget(form.placedeRencontre, { 'attr': { 'class': 'form-control' } }) }}
-                </div>
-
-                <div class="mb-3">
-                    {{ form_label(form.vehicule, 'Véhicule', {'label_attr': {'class': 'form-label'}}) }}
-                    {{ form_widget(form.vehicule, { 'attr': { 'class': 'form-control' } }) }}
-                </div>
-
-                <div class="mb-3">
-                    {{ form_label(form.date, 'Date du covoiturage', {'label_attr': {'class': 'form-label'}}) }}
-                    {{ form_widget(form.date, { 'attr': { 'class': 'form-control' } }) }}
-                </div>
-                <div class="mb-3">
-                    {{ form_label(form.nbplace, 'nombre des places', {'label_attr': {'class': 'form-label'}}) }}
-                    {{ form_widget(form.nbplace, { 'attr': { 'class': 'form-control' } }) }}
-                </div>
-                
-
-                <button type="submit" class="btn btn-primary w-100">Ajouter Covoiturage</button>
-
-            {{ form_end(form) }}
-        </div>
+    <div class="page-header">
+        <h1>🚗 Ajouter un Covoiturage</h1>
+        <p>Sélectionnez votre trajet sur la carte et renseignez les détails</p>
     </div>
+
+    <div id="map-wrapper">
+        <h2>📍 Sélectionnez le trajet sur la carte</h2>
+        <div class="alert-map">
+            <strong>1er clic</strong> = point de départ &nbsp;|&nbsp;
+            <strong>2e clic</strong> = point d'arrivée &nbsp;|&nbsp;
+            Cliquez à nouveau sur la carte pour recommencer.
+        </div>
+
+        <div id="map"></div>
+
+        <div class="location-preview">
+            <div class="location-box depart">
+                <strong>🟢 Départ</strong>
+                <div class="place-name" id="preview-depart">Non sélectionné</div>
+            </div>
+            <div class="location-box arrivee">
+                <strong>🔴 Arrivée</strong>
+                <div class="place-name" id="preview-arrivee">Non sélectionné</div>
+            </div>
+        </div>
+
+        <button type="button" class="btn-reset" onclick="resetMap()">
+            🔄 Réinitialiser la carte
+        </button>
+    </div>
+
+    <div class="form-card">
+        {{ form_start(form) }}
+
+        <div class="form-group">
+            <label class="form-label">Ville de départ</label>
+            <input type="text" class="form-control-map" id="field-depart-display"
+                   placeholder="Cliquez sur la carte pour définir le départ" readonly>
+            <input type="hidden" id="hidden-depart"
+                   name="{{ form.villedeDepart.vars.full_name }}" value="">
+            <input type="hidden" id="lat-depart" name="lat_depart">
+            <input type="hidden" id="lng-depart" name="lng_depart">
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">Ville d'arrivée</label>
+            <input type="text" class="form-control-map" id="field-arrivee-display"
+                   placeholder="Cliquez sur la carte pour définir l'arrivée" readonly>
+            <input type="hidden" id="hidden-arrivee"
+                   name="{{ form.villeArriver.vars.full_name }}" value="">
+            <input type="hidden" id="lat-arrivee" name="lat_arrivee">
+            <input type="hidden" id="lng-arrivee" name="lng_arrivee">
+        </div>
+
+        <div class="form-group">
+            {{ form_label(form.placedeRencontre, 'Lieu de rencontre précis') }}
+            {{ form_widget(form.placedeRencontre, {
+                'attr': { 'class': 'form-control', 'placeholder': 'Ex : Parking gare, arrêt bus...' }
+            }) }}
+        </div>
+
+        <div class="form-group">
+            {{ form_label(form.vehicule, 'Véhicule') }}
+            {{ form_widget(form.vehicule, { 'attr': { 'class': 'form-select' } }) }}
+        </div>
+
+        <div class="row">
+            <div class="col-md-6 form-group">
+                {{ form_label(form.date, 'Date du covoiturage') }}
+                {{ form_widget(form.date, { 'attr': { 'class': 'form-control' } }) }}
+            </div>
+            <div class="col-md-6 form-group">
+                {{ form_label(form.nbplace, 'Nombre de places') }}
+                {{ form_widget(form.nbplace, { 'attr': { 'class': 'form-control', 'min': '1' } }) }}
+            </div>
+        </div>
+
+        <button type="submit" id="btn-submit" class="btn-submit" disabled>
+            <i class="fas fa-car"></i> Ajouter le Covoiturage
+        </button>
+        <p id="submit-hint" class="text-muted text-center mt-2" style="font-size:0.82rem;">
+            Sélectionnez le départ et l'arrivée sur la carte pour continuer.
+        </p>
+
+        <input type="hidden" name="{{ form._token.vars.full_name }}" value="{{ form._token.vars.value }}">
+        {{ form_end(form, {'render_rest': false}) }}
+    </div>
+
 </div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<script>
+(function () {
+    var CENTER = [33.8869, 9.5375];
+    var ZOOM   = 7;
+
+    var map = L.map('map').setView(CENTER, ZOOM);
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '© OpenStreetMap',
+        maxZoom: 19
+    }).addTo(map);
+
+    function makeIcon(color, emoji) {
+        return L.divIcon({
+            className: '',
+            html: '<div style="background:' + color + ';border-radius:50% 50% 50% 0;transform:rotate(-45deg);'
+                + 'width:34px;height:34px;border:3px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,.35);'
+                + 'display:flex;align-items:center;justify-content:center;">'
+                + '<span style="transform:rotate(45deg);font-size:16px;">' + emoji + '</span></div>',
+            iconSize: [34, 34],
+            iconAnchor: [17, 34],
+            popupAnchor: [0, -34]
+        });
+    }
+
+    var ICON_D = makeIcon('#1a6b3c', '🚩');
+    var ICON_A = makeIcon('#e74c3c', '🏁');
+
+    var mD = null, mA = null, line = null, step = 0;
+
+    function geocode(lat, lng) {
+        return fetch(
+            'https://nominatim.openstreetmap.org/reverse?lat=' + lat + '&lon=' + lng + '&format=json',
+            { headers: { 'Accept-Language': 'fr' } }
+        )
+        .then(function(r) { return r.json(); })
+        .then(function(d) {
+            var a = d.address || {};
+            return a.city || a.town || a.village || a.county || a.state || d.display_name || (lat.toFixed(3) + ',' + lng.toFixed(3));
+        })
+        .catch(function() {
+            return lat.toFixed(3) + ',' + lng.toFixed(3);
+        });
+    }
+
+    function drawLine(a, b) {
+        if (line) { map.removeLayer(line); }
+        line = L.polyline([a, b], { color: '#1a6b3c', weight: 4, dashArray: '8 5', opacity: 0.8 }).addTo(map);
+        map.fitBounds(L.latLngBounds([a, b]), { padding: [60, 60] });
+    }
+
+    function setReady(ok) {
+        document.getElementById('btn-submit').disabled = !ok;
+        document.getElementById('submit-hint').style.display = ok ? 'none' : 'block';
+    }
+
+    map.on('click', function (e) {
+        var lat = e.latlng.lat;
+        var lng = e.latlng.lng;
+
+        if (step === 0 || step === 2) {
+            if (mD) { map.removeLayer(mD); }
+            if (mA) { map.removeLayer(mA); }
+            if (line) { map.removeLayer(line); }
+            mA = null;
+            line = null;
+
+            mD = L.marker([lat, lng], { icon: ICON_D }).addTo(map).bindPopup('Départ').openPopup();
+
+            geocode(lat, lng).then(function(nom) {
+                document.getElementById('field-depart-display').value = nom;
+                document.getElementById('hidden-depart').value = nom;
+                document.getElementById('lat-depart').value = lat;
+                document.getElementById('lng-depart').value = lng;
+                document.getElementById('preview-depart').textContent = nom;
+                document.getElementById('field-arrivee-display').value = '';
+                document.getElementById('hidden-arrivee').value = '';
+                document.getElementById('preview-arrivee').textContent = 'Non sélectionné';
+            });
+
+            step = 1;
+            setReady(false);
+
+        } else if (step === 1) {
+            if (mA) { map.removeLayer(mA); }
+            mA = L.marker([lat, lng], { icon: ICON_A }).addTo(map).bindPopup('Arrivée').openPopup();
+
+            geocode(lat, lng).then(function(nom) {
+                document.getElementById('field-arrivee-display').value = nom;
+                document.getElementById('hidden-arrivee').value = nom;
+                document.getElementById('lat-arrivee').value = lat;
+                document.getElementById('lng-arrivee').value = lng;
+                document.getElementById('preview-arrivee').textContent = nom;
+                drawLine(mD.getLatLng(), [lat, lng]);
+                step = 2;
+                setReady(true);
+            });
+        }
+    });
+
+    window.resetMap = function () {
+        if (mD) { map.removeLayer(mD); }
+        if (mA) { map.removeLayer(mA); }
+        if (line) { map.removeLayer(line); }
+        mD = null; mA = null; line = null; step = 0;
+        document.getElementById('field-depart-display').value = '';
+        document.getElementById('field-arrivee-display').value = '';
+        document.getElementById('hidden-depart').value = '';
+        document.getElementById('hidden-arrivee').value = '';
+        document.getElementById('preview-depart').textContent = 'Non sélectionné';
+        document.getElementById('preview-arrivee').textContent = 'Non sélectionné';
+        map.setView(CENTER, ZOOM);
+        setReady(false);
+    };
+
+    document.querySelector('form').addEventListener('submit', function (e) {
+        if (!document.getElementById('hidden-depart').value || !document.getElementById('hidden-arrivee').value) {
+            e.preventDefault();
+            alert('Veuillez sélectionner le départ et l\'arrivée sur la carte.');
+        }
+    });
+
+    setTimeout(function () { map.invalidateSize(); }, 400);
+})();
+</script>
+
 {% endblock %}

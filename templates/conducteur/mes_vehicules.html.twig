@@ -1,0 +1,165 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Mes véhicules - Tri9na{% endblock %}
+
+{% block styles %}
+<style>
+    .vehicules-header {
+        background: linear-gradient(135deg, #0d1f14 0%, #1a6b3c 100%);
+        border-radius: 24px;
+        padding: 2rem;
+        margin-bottom: 2rem;
+        color: white;
+        text-align: center;
+    }
+    .vehicules-header h1 {
+        font-family: 'Syne', sans-serif;
+        font-weight: 800;
+        font-size: 1.8rem;
+    }
+    .vehicule-card {
+        background: white;
+        border-radius: 20px;
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+        box-shadow: var(--shadow);
+        transition: transform 0.2s;
+        display: flex;
+        align-items: center;
+        gap: 1.5rem;
+        flex-wrap: wrap;
+    }
+    .vehicule-card:hover {
+        transform: translateY(-4px);
+    }
+    .vehicule-image {
+        flex-shrink: 0;
+        width: 100px;
+        height: 80px;
+        border-radius: 12px;
+        overflow: hidden;
+        background: #f0f2f0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    .vehicule-image img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+    .vehicule-image i {
+        font-size: 2.5rem;
+        color: var(--muted);
+    }
+    .vehicule-info {
+        display: flex;
+        gap: 1rem;
+        flex-wrap: wrap;
+        flex: 1;
+    }
+    .vehicule-info-item {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        background: #f0f7f3;
+        padding: 6px 14px;
+        border-radius: 40px;
+        color: var(--primary);
+    }
+    .btn-supprimer {
+        background: #dc3545;
+        color: white;
+        border: none;
+        border-radius: 40px;
+        padding: 8px 20px;
+        transition: 0.2s;
+        cursor: pointer;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+    }
+    .btn-supprimer:hover {
+        background: #c82333;
+        transform: translateY(-2px);
+        color: white;
+    }
+    .empty-state {
+        text-align: center;
+        padding: 3rem;
+        background: white;
+        border-radius: 24px;
+        color: var(--muted);
+    }
+    .btn-ajouter {
+        background: var(--accent);
+        color: var(--dark);
+        border-radius: 40px;
+        padding: 0.7rem 1.5rem;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+    }
+    @media (max-width: 768px) {
+        .vehicule-card {
+            flex-direction: column;
+            text-align: center;
+        }
+        .vehicule-info {
+            justify-content: center;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block body %}
+<div class="container py-5">
+    <div class="vehicules-header">
+        <h1>🚘 Mes véhicules</h1>
+        <p>Consultez et gérez vos véhicules enregistrés</p>
+        <a href="{{ path('app_vehicule') }}" class="btn-ajouter mt-3">
+            <i class="fas fa-plus-circle"></i> Ajouter un véhicule
+        </a>
+    </div>
+
+    {% if vehicules is empty %}
+        <div class="empty-state">
+            <i class="fas fa-car-side fa-3x mb-3 opacity-25"></i>
+            <p>Vous n'avez encore ajouté aucun véhicule.</p>
+            <a href="{{ path('app_vehicule') }}" class="btn-t-primary">Ajouter mon premier véhicule</a>
+        </div>
+    {% else %}
+        {% for vehicule in vehicules %}
+            <div class="vehicule-card">
+                <div class="vehicule-image">
+                    {% if vehicule.imageFilename %}
+                        <img src="{{ asset('uploads/vehicules/' ~ vehicule.imageFilename) }}" alt="Photo du véhicule">
+                    {% else %}
+                        <i class="fas fa-car"></i>
+                    {% endif %}
+                </div>
+                <div class="vehicule-info">
+                    <div class="vehicule-info-item">
+                        <i class="fas fa-car"></i> {{ vehicule.type }}
+                    </div>
+                    <div class="vehicule-info-item">
+                        <i class="fas fa-tachometer-alt"></i> {{ vehicule.model }}
+                    </div>
+                    <div class="vehicule-info-item">
+                        <i class="fas fa-chair"></i> {{ vehicule.nbpplace }} places
+                    </div>
+                </div>
+                <div>
+                    <a href="{{ path('app_vehicule_supprimer', {id: vehicule.id}) }}" 
+                       class="btn-supprimer"
+                       onclick="return confirm('Supprimer définitivement ce véhicule ?')">
+                        <i class="fas fa-trash-alt"></i> Supprimer
+                    </a>
+                </div>
+            </div>
+        {% endfor %}
+    {% endif %}
+</div>
+{% endblock %}

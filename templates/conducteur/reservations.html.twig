@@ -1,198 +1,242 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Gérer les Réservations{% endblock %}
+{% block title %}Gérer les réservations - Tri9na{% endblock %}
 
-{% block body %}
+{% block styles %}
 <style>
-    /* Styles généraux */
-    body {
-        background: linear-gradient(135deg, #f5f7fa, #c3cfe2); /* Dégradé professionnel */
-        font-family: 'Roboto', sans-serif; /* Police moderne */
-        margin: 0;
-        padding: 0;
-        color: #2c3e50;
+    .page-header {
+        background: linear-gradient(135deg, #0d1f14 0%, #1a6b3c 100%);
+        border-radius: 24px;
+        padding: 2rem;
+        margin-bottom: 2rem;
+        color: white;
+        text-align: center;
+    }
+    .page-header h1 {
+        font-family: 'Syne', sans-serif;
+        font-weight: 800;
+        font-size: 1.8rem;
+        margin-bottom: 0.5rem;
+    }
+    .page-header p {
+        opacity: 0.85;
+        font-size: 0.95rem;
     }
 
-    /* Conteneur principal */
-    .container {
-        max-width: 1000px;
-        margin: 50px auto;
-        padding: 30px;
-        background: #ffffff;
-        border-radius: 8px;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-    }
-
-    /* En-tête de la page */
-    h1 {
-        font-size: 2.2rem;
-        color: #34495e;
-        margin-bottom: 20px;
-        border-bottom: 2px solid #3498db;
-        padding-bottom: 10px;
-    }
-
-    /* Table */
-    table {
+    /* Table moderne */
+    .reservations-table {
+        background: white;
+        border-radius: 20px;
+        overflow: hidden;
+        box-shadow: var(--shadow);
         width: 100%;
-        margin-top: 20px;
         border-collapse: collapse;
     }
-
-    th, td {
-        padding: 12px;
+    .reservations-table thead tr {
+        background: var(--dark);
+        color: white;
+    }
+    .reservations-table th {
+        padding: 1rem;
+        font-weight: 600;
+        font-size: 0.85rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
         text-align: left;
-        border: 1px solid #ecf0f1;
+        position: sticky;
+        top: 0;
+        background: var(--dark);
+    }
+    .reservations-table td {
+        padding: 1rem;
+        border-bottom: 1px solid #eef2f0;
+        vertical-align: middle;
+    }
+    .reservations-table tbody tr:hover {
+        background: #f9fbf9;
     }
 
-    th {
-        background-color: #34495e;
+    /* Badges de statut */
+    .status-badge {
+        padding: 6px 14px;
+        border-radius: 40px;
+        font-size: 0.75rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        width: fit-content;
+    }
+    .status-attente {
+        background: #fff3cd;
+        color: #856404;
+    }
+    .status-valide {
+        background: #d4edda;
+        color: #155724;
+    }
+    .status-refuse {
+        background: #f8d7da;
+        color: #721c24;
+    }
+
+    /* Boutons d'action */
+    .btn-action {
+        padding: 6px 14px;
+        border-radius: 40px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        transition: 0.2s;
+        border: none;
+        cursor: pointer;
+    }
+    .btn-valider {
+        background: #27ae60;
         color: white;
     }
-
-    tr:nth-child(even) {
-        background-color: #ecf0f1;
+    .btn-valider:hover {
+        background: #2ecc71;
+        transform: translateY(-2px);
     }
-
-    tr:hover {
-        background-color: #bdc3c7;
-    }
-
-    /* Badges */
-    .badge {
-        padding: 6px 12px;
-        font-size: 0.9rem;
-        border-radius: 12px;
-    }
-
-    .badge.bg-warning {
-        background-color: #f39c12;
+    .btn-refuser {
+        background: #e74c3c;
         color: white;
     }
-
-    .badge.bg-success {
-        background-color: #27ae60;
-        color: white;
+    .btn-refuser:hover {
+        background: #c0392b;
+        transform: translateY(-2px);
+    }
+    .btn-disabled {
+        background: #bdc3c7;
+        color: #7f8c8d;
+        cursor: not-allowed;
+        pointer-events: none;
     }
 
-    .badge.bg-danger {
-        background-color: #e74c3c;
-        color: white;
+    /* Message vide */
+    .empty-state {
+        text-align: center;
+        padding: 3rem;
+        background: white;
+        border-radius: 24px;
+        color: var(--muted);
+    }
+    .empty-state i {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+        opacity: 0.5;
     }
 
-    /* Boutons */
-    .btn-success {
-        background-color: #27ae60;
-        color: white;
-        font-size: 1rem;
-        padding: 10px 20px;
-        border-radius: 5px;
-    }
-
-    .btn-danger {
-        background-color: #e74c3c;
-        color: white;
-        font-size: 1rem;
-        padding: 10px 20px;
-        border-radius: 5px;
-    }
-
-    .btn-success:hover {
-        background-color: #2ecc71;
-    }
-
-    .btn-danger:hover {
-        background-color: #c0392b;
-    }
-    .table thead {
-    position: sticky;
-    top: 0;
-    z-index: 1; /* S'assurer que l'en-tête est toujours au-dessus du contenu */
-    background-color: #34495e; /* Assurez-vous que l'arrière-plan de l'en-tête est visible */
-    color: white;
-    }
-
-    /* Ajoutez une ombre portée pour que l'en-tête se distingue lorsqu'il est fixé */
-    .table thead th {
-        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-    }
-
-    /* Alert */
-    .alert-warning {
-        background-color: #f39c12;
-        color: white;
-        padding: 15px;
-        font-size: 1rem;
-        border-radius: 5px;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-    }
-
-    /* Animation subtile */
-    @keyframes fadeIn {
-        from {
-            opacity: 0;
-            transform: translateY(10px);
+    /* Responsive */
+    @media (max-width: 768px) {
+        .reservations-table, .reservations-table tbody, .reservations-table tr, .reservations-table td {
+            display: block;
+            width: 100%;
         }
-        to {
-            opacity: 1;
-            transform: translateY(0);
+        .reservations-table thead {
+            display: none;
         }
-    }
-
-    .container {
-        animation: fadeIn 0.8s ease;
+        .reservations-table tr {
+            margin-bottom: 1rem;
+            border: 1px solid #eef2f0;
+            border-radius: 16px;
+            padding: 1rem;
+            background: white;
+        }
+        .reservations-table td {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #eef2f0;
+            padding: 0.75rem 0;
+        }
+        .reservations-table td:last-child {
+            border-bottom: none;
+        }
+        .reservations-table td::before {
+            content: attr(data-label);
+            font-weight: 700;
+            color: var(--dark);
+            width: 40%;
+        }
     }
 </style>
+{% endblock %}
 
-<div class="container mt-4">
-    <h1>Gérer les Réservations</h1>
+{% block body %}
+<div class="container py-5">
+    <div class="page-header">
+        <h1>📋 Gérer les réservations</h1>
+        <p>Consultez et validez les demandes des passagers pour vos trajets</p>
+    </div>
 
     {% if reservations is empty %}
-        <div class="alert alert-warning">Aucune réservation en attente.</div>
+        <div class="empty-state">
+            <i class="fas fa-inbox"></i>
+            <p>Aucune réservation pour le moment.</p>
+        </div>
     {% else %}
-        <table class="table table-bordered">
-            <thead>
-                <tr>
-                    <th>Passager</th>
-                    <th>Départ</th>
-                    <th>Destination</th>
-                    <th>Date</th>
-                    <th>État</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for reservation in reservations %}
+        <div class="table-responsive">
+            <table class="reservations-table">
+                <thead>
                     <tr>
-                        <td>{{ reservation.passager.name }}</td>
-                        <td>{{ reservation.covoiturage.villedeDepart }}</td>
-                        <td>{{ reservation.covoiturage.villeArriver }}</td>
-                        <td>{{ reservation.covoiturage.date|date('d/m/Y H:i') }}</td>
-                        <td>
-                            {% if reservation.etat == 'en_attente' %}
-                                <span class="badge bg-warning">En attente</span>
-                            {% elseif reservation.etat == 'valide' %}
-                                <span class="badge bg-success">Validée</span>
-                            {% else %}
-                                <span class="badge bg-danger">Refusée</span>
-                            {% endif %}
-                        </td>
-                        <td>
-                            {% if reservation.etat == 'en_attente' %}
-                                <a href="{{ path('app_reservation_valider', { id: reservation.id }) }}" class="btn btn-success btn-sm">
-                                    Valider
-                                </a>
-                                <a href="{{ path('app_reservation_refuser', { id: reservation.id }) }}" class="btn btn-danger btn-sm">
-                                    Refuser
-                                </a>
-                            {% else %}
-                                <span class="text-muted">Aucune action</span>
-                            {% endif %}
-                        </td>
+                        <th>Passager</th>
+                        <th>Téléphone</th>
+                        <th>Départ</th>
+                        <th>Destination</th>
+                        <th>Date</th>
+                        <th>Statut</th>
+                        <th>Actions</th>
                     </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+                </thead>
+                <tbody>
+                    {% for reservation in reservations %}
+                        <tr>
+                            <td data-label="Passager">{{ reservation.passager.name }}</td>
+                            <td data-label="Téléphone">{{ reservation.passager.numtel }}</td>
+                            <td data-label="Départ">{{ reservation.covoiturage.villedeDepart }}</td>
+                            <td data-label="Destination">{{ reservation.covoiturage.villeArriver }}</td>
+                            <td data-label="Date">{{ reservation.covoiturage.date|date('d/m/Y H:i') }}</td>
+                            <td data-label="Statut">
+                                {% if reservation.etat == 'en_attente' %}
+                                    <span class="status-badge status-attente">
+                                        <i class="fas fa-clock"></i> En attente
+                                    </span>
+                                {% elseif reservation.etat == 'valide' %}
+                                    <span class="status-badge status-valide">
+                                        <i class="fas fa-check-circle"></i> Validée
+                                    </span>
+                                {% else %}
+                                    <span class="status-badge status-refuse">
+                                        <i class="fas fa-times-circle"></i> Refusée
+                                    </span>
+                                {% endif %}
+                            </td>
+                            <td data-label="Actions">
+                                {% if reservation.etat == 'en_attente' %}
+                                    <a href="{{ path('app_reservation_valider', { id: reservation.id }) }}" class="btn-action btn-valider">
+                                        <i class="fas fa-check"></i> Valider
+                                    </a>
+                                    <a href="{{ path('app_reservation_refuser', { id: reservation.id }) }}" class="btn-action btn-refuser">
+                                        <i class="fas fa-times"></i> Refuser
+                                    </a>
+                                {% else %}
+                                    <span class="btn-action btn-disabled">
+                                        <i class="fas fa-lock"></i> Aucune action
+                                    </span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
     {% endif %}
 </div>
 {% endblock %}

@@ -28,9 +28,10 @@ class CovoiturageCond
     #[ORM\Column(length: 255)]
     private ?string $placedeRencontre = null;
 
-    #[ORM\OneToOne(cascade: ['persist', 'remove'])]
-    #[ORM\JoinColumn(nullable: false)]
-    private ?Vehicule $vehicule = null;
+    // ✅ CORRECT
+#[ORM\ManyToOne(targetEntity: Vehicule::class)]
+#[ORM\JoinColumn(nullable: true)]
+private ?Vehicule $vehicule = null;
 
     #[ORM\Column]
     private ?\DateTimeImmutable $date = null;

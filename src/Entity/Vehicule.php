@@ -4,6 +4,8 @@ namespace App\Entity;
 
 use App\Repository\VehiculeRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\HttpFoundation\File\File;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 #[ORM\Entity(repositoryClass: VehiculeRepository::class)]
 class Vehicule
@@ -26,6 +28,17 @@ class Vehicule
     #[ORM\JoinColumn(nullable: false)]
     private ?Conducteur $conducteur = null;
 
+    /**
+     * Nom du fichier image stocké en base
+     */
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $imageFilename = null;
+
+    /**
+     * Fichier image (non mappé en base, utilisé pour l'upload)
+     */
+    private ?File $imageFile = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -39,7 +52,6 @@ class Vehicule
     public function setType(string $type): static
     {
         $this->type = $type;
-
         return $this;
     }
 
@@ -51,7 +63,6 @@ class Vehicule
     public function setNbpplace(int $nbpplace): static
     {
         $this->nbpplace = $nbpplace;
-
         return $this;
     }
 
@@ -63,7 +74,6 @@ class Vehicule
     public function setModel(?string $model): static
     {
         $this->model = $model;
-
         return $this;
     }
 
@@ -75,9 +85,28 @@ class Vehicule
     public function setConducteur(?Conducteur $conducteur): static
     {
         $this->conducteur = $conducteur;
-
         return $this;
     }
 
+    public function getImageFilename(): ?string
+    {
+        return $this->imageFilename;
+    }
+
+    public function setImageFilename(?string $imageFilename): static
+    {
+        $this->imageFilename = $imageFilename;
+        return $this;
+    }
+
+    public function getImageFile(): ?File
+    {
+        return $this->imageFile;
+    }
+
+    public function setImageFile(?File $imageFile): static
+    {
+        $this->imageFile = $imageFile;
+        return $this;
+    }
 }
- 

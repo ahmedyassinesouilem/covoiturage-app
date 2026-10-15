@@ -4,68 +4,418 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Tri9na{% endblock %}</title>
-    <link rel="stylesheet" href="{{ asset('css/app.css') }}"> <!-- Chemin vers ton fichier CSS -->
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        :root {
+            --primary:   #1a6b3c;
+            --primary-light: #25a25a;
+            --accent:    #f0a500;
+            --dark:      #0d1f14;
+            --surface:   #f4f7f5;
+            --text:      #1c2e22;
+            --muted:     #6b8070;
+            --white:     #ffffff;
+            --radius:    14px;
+            --shadow:    0 8px 32px rgba(26,107,60,0.10);
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background: var(--surface);
+            color: var(--text);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* ===== NAVBAR ===== */
+        .tri9-nav {
+            background: var(--dark);
+            padding: 0 2rem;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 20px rgba(0,0,0,0.25);
+        }
+
+        .tri9-nav .navbar-inner {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 68px;
+        }
+
+        .tri9-nav .brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+        }
+
+        .tri9-nav .brand img {
+            height: 44px;
+            width: auto;
+        }
+
+        .tri9-nav .brand-name {
+            font-family: 'Syne', sans-serif;
+            font-weight: 800;
+            font-size: 1.5rem;
+            color: var(--white);
+            letter-spacing: -0.5px;
+        }
+
+        .tri9-nav .brand-name span { color: var(--accent); }
+
+        /* Nav links */
+        .tri9-nav .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            list-style: none;
+        }
+
+        .tri9-nav .nav-links a {
+            color: rgba(255,255,255,0.75);
+            text-decoration: none;
+            font-size: 0.88rem;
+            font-weight: 500;
+            padding: 7px 13px;
+            border-radius: 8px;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            white-space: nowrap;
+        }
+
+        .tri9-nav .nav-links a:hover {
+            color: var(--white);
+            background: rgba(255,255,255,0.08);
+        }
+
+        .tri9-nav .nav-links a.active {
+            color: var(--white);
+            background: var(--primary);
+        }
+
+        .tri9-nav .nav-links .btn-nav {
+            background: var(--primary-light);
+            color: var(--white) !important;
+            padding: 8px 18px;
+            border-radius: 8px;
+            font-weight: 600;
+        }
+
+        .tri9-nav .nav-links .btn-nav:hover {
+            background: var(--primary);
+        }
+
+        .tri9-nav .nav-links .btn-logout {
+            background: rgba(240,165,0,0.15);
+            color: var(--accent) !important;
+            border: 1px solid rgba(240,165,0,0.3);
+        }
+
+        .tri9-nav .nav-links .btn-logout:hover {
+            background: var(--accent);
+            color: var(--dark) !important;
+        }
+
+        /* Divider in nav */
+        .nav-sep {
+            width: 1px;
+            height: 24px;
+            background: rgba(255,255,255,0.12);
+            margin: 0 6px;
+        }
+
+        /* Role badge */
+        .role-badge {
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            padding: 2px 8px;
+            border-radius: 20px;
+            background: var(--accent);
+            color: var(--dark);
+            margin-left: 4px;
+        }
+
+        /* Mobile toggle */
+        .nav-toggle {
+            display: none;
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.4rem;
+            cursor: pointer;
+        }
+
+        @media (max-width: 900px) {
+            .nav-toggle { display: block; }
+            .tri9-nav .nav-links {
+                display: none;
+                flex-direction: column;
+                position: absolute;
+                top: 68px; left: 0; right: 0;
+                background: var(--dark);
+                padding: 16px;
+                gap: 4px;
+                box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+            }
+            .tri9-nav .nav-links.open { display: flex; }
+            .tri9-nav .nav-links a { justify-content: flex-start; }
+        }
+
+        /* ===== MAIN ===== */
+        main { flex: 1; }
+
+        /* ===== FOOTER ===== */
+        footer {
+            background: var(--dark);
+            color: rgba(255,255,255,0.5);
+            text-align: center;
+            padding: 22px;
+            font-size: 0.82rem;
+            letter-spacing: 0.3px;
+        }
+
+        footer strong { color: var(--accent); }
+
+        /* ===== FLASH MESSAGES ===== */
+        .flash-zone {
+            max-width: 900px;
+            margin: 18px auto 0;
+            padding: 0 15px;
+        }
+
+        .flash-success {
+            background: #d4edda; color: #155724;
+            border-left: 4px solid #28a745;
+            border-radius: 8px; padding: 12px 16px;
+            margin-bottom: 10px; font-size: 0.9rem;
+        }
+
+        .flash-danger, .flash-error {
+            background: #f8d7da; color: #721c24;
+            border-left: 4px solid #dc3545;
+            border-radius: 8px; padding: 12px 16px;
+            margin-bottom: 10px; font-size: 0.9rem;
+        }
+
+        .flash-warning {
+            background: #fff3cd; color: #856404;
+            border-left: 4px solid #ffc107;
+            border-radius: 8px; padding: 12px 16px;
+            margin-bottom: 10px; font-size: 0.9rem;
+        }
+
+        /* ===== GLOBAL CARD STYLE ===== */
+        .t-card {
+            background: var(--white);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: 28px;
+        }
+
+        /* ===== BUTTONS ===== */
+        .btn-t-primary {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 11px 24px;
+            border-radius: 10px;
+            font-family: 'DM Sans', sans-serif;
+            font-weight: 600;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: background 0.2s, transform 0.1s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-t-primary:hover { background: var(--primary-light); transform: translateY(-1px); }
+
+        
+    </style>
     {% block styles %}{% endblock %}
 </head>
 <body>
-    <!-- Navbar -->
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
-        <div class="container-fluid">
-            <a class="navbar-brand" href="#">
-                <img src="{{ asset('images/logo.png') }}" alt="Logo" width="200">
+
+    <!-- ===== NAVBAR ===== -->
+    <nav class="tri9-nav">
+        <div class="navbar-inner">
+            <a class="brand" href="{{ path('app_main') }}">
+                <img src="{{ asset('images/logo.png') }}" alt="Tri9na">
+                <span class="brand-name">TRI<span>9</span>NA</span>
             </a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
+
+            <button class="nav-toggle" onclick="this.nextElementSibling.classList.toggle('open')">
+                <i class="fas fa-bars"></i>
             </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto">
-                    <li class="nav-item"><a class="nav-link" href="{{ path('app_main') }}">Accueil</a></li>
 
-                    {% if app.user %}
-                        <!-- Liens pour les utilisateurs connectés -->
-                        {% if 'ROLE_PASSAGER' in app.user.roles %}
-                            <li class="nav-item"><a class="nav-link" href="{{ path('app_passager') }}">Espace Passager</a></li>
-                            <li class="nav-item"><a class="nav-link" href="{{ path('app_mes_reservations') }}">Mes réservations</a></li>
-                            <li class="nav-item"><a class="nav-link" href="{{ path('reclamation_new') }}">reclamation</a></li>
-                        {% endif %}
+            <ul class="nav-links">
+                {# Déterminer la destination du bouton Accueil #}
+{% if app.user %}
+    {% if 'ROLE_PASSAGER' in app.user.roles %}
+        {% set home_path = path('app_passager') %}
+    {% elseif 'ROLE_CONDUCTEUR' in app.user.roles %}
+        {% set home_path = path('app_conducteur') %}
+    {% elseif 'ROLE_ADMIN' in app.user.roles %}
+        {% set home_path = path('app_admin') %}
+    {% else %}
+        {% set home_path = path('app_main') %}
+    {% endif %}
+{% else %}
+    {% set home_path = path('app_main') %}
+{% endif %}
 
-                        {% if 'ROLE_CONDUCTEUR' in app.user.roles %}
-                            <li class="nav-item"><a class="nav-link" href="{{ path('app_vehicule') }}">Ajouter véhicule</a></li>
-                            <li class="nav-item"><a class="nav-link" href="{{ path('app_covoiturage') }}">Ajouter covoiturage</a></li>
-                            <li class="nav-item"><a class="nav-link" href="{{ path('app_mes_covoiturages') }}">Mes covoiturages</a></li>
-                            <li class="nav-item"><a class="nav-link" href="{{ path('app_conducteur_reservations') }}">Les réservations</a></li>
-                            <li class="nav-item"><a class="nav-link" href="{{ path('reclamation_new') }}">reclamation</a></li>
-                        {% endif %}
-                        {% if 'ROLE_ADMIN' in app.user.roles %}
-                            <li class="nav-item"><a class="nav-link" href="{{ path('app_admin') }}">valider conducteur</a></li>
-                            <li class="nav-item"><a class="nav-link" href="{{ path('app_admin_reservations') }}">consulter les reservations</a></li>
-                            <li class="nav-item"><a class="nav-link" href="{{ path('app_users') }}">les utilisateurs</a></li>
-                            <li class="nav-item"><a class="nav-link" href="{{ path('app_admin_reclamations') }}">les reclamtions</a></li>
-                        {% endif %}
+<li>
+    <a href="{{ home_path }}">
+        <i class="fas fa-home"></i> Accueil
+    </a>
+</li>
 
-                        <!-- Liens communs aux conducteurs et passagers -->
-                        <li class="nav-item"><a class="nav-link" href="{{ path('app_logout') }}">Se déconnecter</a></li>
-                    {% else %}
-                        <!-- Liens pour les utilisateurs non connectés -->
-                        <li class="nav-item"><a class="nav-link" href="{{ path('register_passager') }}">Inscription Passager</a></li>
-                        <li class="nav-item"><a class="nav-link" href="{{ path('register_conducteur') }}">Inscription Conducteur</a></li>
-                        <li class="nav-item"><a class="nav-link" href="{{ path('app_login') }}">Se connecter</a></li>
+                {% if app.user %}
+                    <li><div class="nav-sep"></div></li>
+
+                    {% if 'ROLE_PASSAGER' in app.user.roles %}
+                        <li>
+                            <a href="{{ path('app_covoiturage_disponible') }}">
+                                <i class="fas fa-search"></i> Trouver un trajet
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{{ path('app_mes_reservations') }}">
+                                <i class="fas fa-ticket-alt"></i> Mes réservations
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{{ path('reclamation_new') }}">
+                                <i class="fas fa-comment-dots"></i> Réclamation
+                            </a>
+                        </li>
                     {% endif %}
-                </ul>
-            </div>
+
+                    {% if 'ROLE_CONDUCTEUR' in app.user.roles %}
+                        <li>
+                            <a href="{{ path('app_covoiturage') }}" class="btn-nav">
+                                <i class="fas fa-plus"></i> Publier un trajet
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{{ path('app_mes_covoiturages') }}">
+                                <i class="fas fa-car"></i> Mes trajets
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{{ path('app_conducteur_reservations') }}">
+                                <i class="fas fa-users"></i> Passagers
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{{ path('app_vehicule') }}">
+                                <i class="fas fa-car-side"></i> Mon véhicule
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{{ path('reclamation_new') }}">
+                                <i class="fas fa-comment-dots"></i> Réclamation
+                            </a>
+                        </li>
+                        <li>
+    <a href="{{ path('app_mes_vehicules') }}">
+        <i class="fas fa-car-side"></i> Mes véhicules
+    </a>
+</li>
+                    {% endif %}
+
+                    {% if 'ROLE_ADMIN' in app.user.roles %}
+                        <li>
+                            <a href="{{ path('app_admin') }}">
+                                <i class="fas fa-shield-alt"></i> Admin
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{{ path('app_users') }}">
+                                <i class="fas fa-users-cog"></i> Utilisateurs
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{{ path('app_admin_reclamations') }}">
+                                <i class="fas fa-flag"></i> Réclamations
+                            </a>
+                        </li>
+                    {% endif %}
+
+                    <li><div class="nav-sep"></div></li>
+                    <li>
+                        <a href="{{ path('app_logout') }}" class="btn-logout">
+                            <i class="fas fa-sign-out-alt"></i> Déconnexion
+                        </a>
+                    </li>
+
+                {% else %}
+                    <li><div class="nav-sep"></div></li>
+                    <li>
+                        <a href="{{ path('register_passager') }}">
+                            <i class="fas fa-user-plus"></i> Passager
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ path('register_conducteur') }}">
+                            <i class="fas fa-id-card"></i> Conducteur
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ path('app_login') }}" class="btn-nav">
+                            <i class="fas fa-sign-in-alt"></i> Connexion
+                        </a>
+                    </li>
+                {% endif %}
+            </ul>
         </div>
     </nav>
 
-    <!-- Main Content -->
+    <!-- ===== FLASH MESSAGES ===== -->
+    {% if app.flashes('success') is not empty or app.flashes('danger') is not empty or app.flashes('warning') is not empty or app.flashes('error') is not empty %}
+    <div class="flash-zone">
+        {% for msg in app.flashes('success') %}
+            <div class="flash-success"><i class="fas fa-check-circle"></i> {{ msg }}</div>
+        {% endfor %}
+        {% for msg in app.flashes('danger') %}
+            <div class="flash-danger"><i class="fas fa-exclamation-circle"></i> {{ msg }}</div>
+        {% endfor %}
+        {% for msg in app.flashes('error') %}
+            <div class="flash-error"><i class="fas fa-exclamation-circle"></i> {{ msg }}</div>
+        {% endfor %}
+        {% for msg in app.flashes('warning') %}
+            <div class="flash-warning"><i class="fas fa-exclamation-triangle"></i> {{ msg }}</div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <!-- ===== CONTENU ===== -->
     <main>
         {% block body %}{% endblock %}
         {% block content %}{% endblock %}
     </main>
 
-    <!-- Footer -->
-    <footer class="text-center py-4">
-        <p>&copy; 2024 TRI9NA - Tous droits réservés</p>
+    <!-- ===== FOOTER ===== -->
+    <footer>
+        <p>© 2026 <strong>TRI9NA</strong> — Votre plateforme de covoiturage en Tunisie 🇹🇳</p>
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
